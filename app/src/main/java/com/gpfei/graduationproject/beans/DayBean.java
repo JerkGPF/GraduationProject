@@ -73,4 +73,17 @@ public class DayBean extends BmobObject {
     public void setAuthor(HrUser author) {
         this.author = author;
     }
+
+    @Override
+    public String toString() {
+        return "DayBean{" +
+                "title_day='" + title_day + '\'' +
+                ", money_day='" + money_day + '\'' +
+                ", address_day='" + address_day + '\'' +
+                ", company_day='" + company_day + '\'' +
+                ", url='" + url + '\'' +
+                ", dCount=" + dCount +
+                ", author=" + author +
+                '}';
+    }
 }

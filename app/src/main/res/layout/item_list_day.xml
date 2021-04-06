@@ -20,7 +20,7 @@
                 android:id="@+id/tv_title_day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="钟点工 | 2018/7/17"
+                android:text="全职 | 2021/3/17"
                 android:textColor="@color/black"
                 android:textSize="16sp"/>
             <TextView
@@ -44,7 +44,7 @@
                     android:id="@+id/tv_money_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="20/小时"
+                    android:text="4000/小时"
                     android:textSize="16sp"
                     android:textColor="@color/orange"/>
                 <View

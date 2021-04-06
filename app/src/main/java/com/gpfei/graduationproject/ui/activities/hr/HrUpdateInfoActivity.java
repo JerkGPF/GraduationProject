@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.HrUser;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.hr.login.HrLoginAndRegisterActivity;
 
 import java.util.Calendar;
@@ -88,7 +89,7 @@ public class HrUpdateInfoActivity extends AppCompatActivity implements View.OnCl
             hrUser.setCompany_introduce(et_company_introduce.getText().toString().trim());
             hrUser.setCompany_free(et_company_free.getText().toString().trim());
             //添加一对一关联，用户关联帖子
-            hrUser.setUserInfo(BmobUser.getCurrentUser(MyUser.class));
+            hrUser.setUserInfo(BmobUser.getCurrentUser(User.class));
             hrUser.save(new SaveListener<String>() {
                 @Override
                 public void done(String s, BmobException e) {

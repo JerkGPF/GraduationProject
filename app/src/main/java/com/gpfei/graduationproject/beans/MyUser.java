@@ -1,5 +1,6 @@
 package com.gpfei.graduationproject.beans;
 
+import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobUser;
 
 

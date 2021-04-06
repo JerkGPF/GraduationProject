@@ -9,7 +9,7 @@ public class HrUser extends BmobObject {
     private String company_email;
     private String company_introduce;
     private String company_free;
-    private MyUser userInfo;
+    private User userInfo;
 
     public String getCompany_name() {
         return company_name;
@@ -59,11 +59,11 @@ public class HrUser extends BmobObject {
         this.company_free = company_free;
     }
 
-    public MyUser getUserInfo() {
+    public User getUserInfo() {
         return userInfo;
     }
 
-    public void setUserInfo(MyUser userInfo) {
+    public void setUserInfo(User userInfo) {
         this.userInfo = userInfo;
     }
 }

@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GraduationProject">
-        <activity android:name=".ui.activities.hr.HrUpdateInfoActivity"></activity>
+        <activity android:name=".ui.activities.hr.HrMainActivity"></activity>
+        <activity android:name=".ui.activities.hr.HrUpdateInfoActivity" />
         <activity android:name=".ui.activities.hr.login.HrLoginAndRegisterActivity" />
         <activity android:name=".ui.activities.common.UpdateUserInfoActivity" />
         <activity android:name=".ui.activities.common.ModifyUserInfoActivity" />

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.ui.activities.common.MainActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
+import com.gpfei.graduationproject.ui.activities.hr.HrMainActivity;
 import com.gpfei.graduationproject.utils.ToastUtils;
 
 import cn.bmob.v3.BmobUser;
@@ -73,7 +74,7 @@ public class HrLoginFragment extends Fragment implements View.OnClickListener {
                         public void done(Object o, BmobException e) {
                             if (e == null) {
                                 ToastUtils.showImageToast(getContext(), "登录成功");
-                                Intent intent = new Intent(getContext(), MainActivity.class);
+                                Intent intent = new Intent(getContext(), HrMainActivity.class);
                                 //清空栈底
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);

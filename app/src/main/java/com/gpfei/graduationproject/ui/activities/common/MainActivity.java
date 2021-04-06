@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         rb3 = findViewById(R.id.rb3);
         rb4 = findViewById(R.id.rb4);
 
-
+        //设置大小比例
         Drawable dr1=getResources().getDrawable(R.drawable.bottom_bar_home_selector);
         Drawable dr2=getResources().getDrawable(R.drawable.bottom_bar_find_selector);
         Drawable dr3=getResources().getDrawable(R.drawable.bottom_bar_message_selector);
