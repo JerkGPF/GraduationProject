@@ -8,16 +8,20 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.adapters.DayAdapter;
+import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.DayBean;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 import com.gpfei.graduationproject.utils.ToastUtils;
@@ -27,14 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Fragment1#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class Fragment1 extends Fragment implements View.OnClickListener {
     private RecyclerView rRecyclerview;
     private List<DayBean> datalist = new ArrayList<>();
@@ -48,24 +50,21 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view =  inflater.inflate(R.layout.fragment_1, container, false);
+        View view = inflater.inflate(R.layout.fragment_1, container, false);
         initView(view);
         loadList();
         return view;
     }
-
-
     private void initView(View view) {
-        rRecyclerview = (RecyclerView) view.findViewById(R.id.rRecyclerview);
-        rl_load_view = (RelativeLayout) view.findViewById(R.id.rl_load_view1);
-        btn_load1 = (Button) view.findViewById(R.id.btn_load1);
+        rRecyclerview = view.findViewById(R.id.rRecyclerview);
+        rl_load_view = view.findViewById(R.id.rl_load_view1);
+        btn_load1 = view.findViewById(R.id.btn_load1);
         btn_load1.setOnClickListener(this);
-        rl_network_error1 = (RelativeLayout) view.findViewById(R.id.rl_network_error1);
+        rl_network_error1 = view.findViewById(R.id.rl_network_error1);
     }
 
     //加载列表数据
     private void loadList() {
-
         //获取后台数据
         BmobQuery<DayBean> query = new BmobQuery<DayBean>();
         query.findObjects(new FindListener<DayBean>() {
@@ -77,7 +76,7 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                     //添加数据到集合
                     datalist.addAll(list);
                     rRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
-                    DayAdapter adapter = new DayAdapter(getContext(), datalist);
+                    DayAdapter adapter = new DayAdapter(getContext(), datalist,"投递");
                     rRecyclerview.setItemAnimator(new DefaultItemAnimator());
                     //添加分割线
                     rRecyclerview.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
@@ -85,7 +84,6 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                     //隐藏加载view
                     rl_load_view.setVisibility(View.GONE);
                     rl_network_error1.setVisibility(View.GONE);
-
                     adapter.setOnItemClickLitener(new DayAdapter.OnItemClickLitener() {
                         @Override
                         public void onItemClick(View view, int position) {
@@ -96,23 +94,27 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                         }
 
                         @Override
-                        public void onItemLongClick(View view, int position) {
+                        public void onItemLongClick(View view, int pos) {
                             //长按弹出列表提示框
                             final ArrayList<String> list = new ArrayList<>();
                             list.add("分享");
                             list.add("投递");
+                            list.add("收藏");
                             list.add("取消");
                             final OptionCenterDialog optionCenterDialog = new OptionCenterDialog();
                             optionCenterDialog.show(getContext(), list);
                             optionCenterDialog.setItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    switch (position){
+                                    switch (position) {
                                         case 0:
-                                            ToastUtils.showImageToast(getContext(),"分享成功");
+                                            ToastUtils.showImageToast(getContext(), "分享成功");
                                             break;
                                         case 1:
-                                            ToastUtils.showImageToast(getContext(),"投递成功");
+                                            setMessage(pos, "投递", true);
+                                            break;
+                                        case 2:
+                                            setMessage(pos, "收藏", true);
                                             break;
                                         default:
                                             break;
@@ -122,24 +124,57 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                             });
                         }
                     });
-
                 } else {
                     rl_load_view.setVisibility(View.GONE);
                     rl_network_error1.setVisibility(View.VISIBLE);
                     btn_load1.setText("重新加载");
-                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络"+e.getMessage());
+                    Log.e("出错了", e.getMessage());
+                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
                 }
             }
         });
     }
 
-
+    //封装投递与收藏状态
+    private void setMessage(int pos, String str, Boolean state) {
+        if (BmobUser.isLogin()) {
+            User user = BmobUser.getCurrentUser(User.class);
+            DayBean dayBean = new DayBean();
+            dayBean.setObjectId(datalist.get(pos).getObjectId());
+            final SelectAndResume selectAndResume = new SelectAndResume();
+            selectAndResume.setDayBean(dayBean);
+            selectAndResume.setUser(user);
+            //收藏状态执行setMsg
+            if (str.equals("收藏")) {
+                selectAndResume.setCollect(state);
+                selectAndResume.setDelivery(false);
+            } else if (str.equals("投递")) {
+                //投递状态执行setDelivery
+                selectAndResume.setDelivery(state);
+                selectAndResume.setCollect(false);
+            }
+            selectAndResume.save(new SaveListener<String>() {
+                @Override
+                public void done(String s, BmobException e) {
+                    if (e == null) {
+                        ToastUtils.showImageToast(getContext(), str + "成功");
+                    } else {
+                        ToastUtils.showTextToast(getContext(), str + "失败");
+                        Log.e("出错", e.getMessage());
+                    }
+                }
+            });
+        } else {
+            ToastUtils.showTextToast(getContext(), "请先登录");
+        }
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_load1:
                 loadList();
+                //rl_load_view.setVisibility(View.VISIBLE);
                 btn_load1.setText("加载中...");
                 break;
         }

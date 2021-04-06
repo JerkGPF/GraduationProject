@@ -71,9 +71,6 @@ public class HrMyFragment extends Fragment {
                             System.out.println(object.get(i).getCompany_day());
                             System.out.println(object.get(i).toString());
                         }
-                        for (DayBean dayBean : object) {
-                            System.out.println(dayBean.getTitle_day());
-                        }
                     } else {
                         Log.e("BMOB", e.toString());
                         Toast.makeText(getActivity(), "查询失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
