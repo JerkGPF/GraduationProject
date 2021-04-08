@@ -60,6 +60,7 @@ public class MyCollectActivity extends AppCompatActivity {
     }
 
     private void loadList() {
+        //一对多关联查询
         BmobQuery<SelectAndResume> query = new BmobQuery<SelectAndResume>();
         DayBean dayBean = new DayBean();
         //dayBean.setObjectId(datalist.get(0).getObjectId());
@@ -95,7 +96,6 @@ public class MyCollectActivity extends AppCompatActivity {
                             intent.putExtra("url", datalist.get(position).getUrl());
                             startActivity(intent);
                         }
-
                         @Override
                         public void onItemLongClick(View view, int position) {
 

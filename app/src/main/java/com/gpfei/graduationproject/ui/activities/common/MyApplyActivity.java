@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +28,9 @@ import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,85 +41,139 @@ import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
-public class MyApplyActivity extends AppCompatActivity {
+public class MyApplyActivity extends AppCompatActivity implements Runnable {
     private RecyclerView rRecyclerview;
     private List<DayBean> datalist = new ArrayList<>();
     private ImageView iv_back;
     private TextView tv_title;
     private LinearLayout ll_myapply;
+    String[] strings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_apply);
-        loadList();
+
         initView();
+        equal();
+
     }
+
     private void initView() {
         rRecyclerview = findViewById(R.id.rRecyclerview);
         iv_back = findViewById(R.id.iv_back);
         tv_title = findViewById(R.id.tv_title);
         ll_myapply = findViewById(R.id.ll_myapply);
+
         tv_title.setText("我的投递");
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                //finish();
+                loadList();
+//                new Thread(){
+//                    @Override
+//                    public void run() {
+//                        super.run();
+//                        equal();
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                loadList();
+//                            }
+//                        });
+//                    }
+//                }.run();
             }
         });
     }
 
-    private void loadList() {
-        BmobQuery<SelectAndResume> query = new BmobQuery<SelectAndResume>();
-        DayBean dayBean = new DayBean();
-        //dayBean.setObjectId(datalist.get(0).getObjectId());
-        dayBean.setObjectId("de0f3d182c");
-        query.addWhereEqualTo("dayBean", new BmobPointer(dayBean));
-        query.include("dayBean");
-        query.findObjects(new FindListener<SelectAndResume>() {
+    //先将所有的id查出来
+    private void equal() {
+        BmobQuery<SelectAndResume> selectAndResumeBmobQuery = new BmobQuery<>();
+        selectAndResumeBmobQuery.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
+        selectAndResumeBmobQuery.addWhereEqualTo("delivery", true);
+        selectAndResumeBmobQuery.findObjects(new FindListener<SelectAndResume>() {
             @Override
-            public void done(List<SelectAndResume> list, BmobException e) {
+            public void done(List<SelectAndResume> object, BmobException e) {
                 if (e == null) {
-                    ll_myapply.setVisibility(View.GONE);
-                    //添加前清除集合数据先，防止数据添加重复
-                    datalist.clear();
-                    //添加数据到集合
-                    for (int i = 0; i < list.size(); i++) {
-                        System.out.println("布尔" + list.get(i).getDelivery());
-                        if (list.get(i).getDelivery()) {
-                            datalist.add(list.get(i).getDayBean());
-                            System.out.println("dataList:+++++++++" + datalist.toString());
-                        }
-                    }
-                    rRecyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    DayAdapter adapter = new DayAdapter(getApplicationContext(), datalist,"投递");
-                    rRecyclerview.setItemAnimator(new DefaultItemAnimator());
-                    //添加分割线
-                    rRecyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL_LIST));
-                    rRecyclerview.setAdapter(adapter);
-                    adapter.setOnItemClickLitener(new DayAdapter.OnItemClickLitener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-                            //点击事件
-                            Intent intent = new Intent(MyApplyActivity.this, JobWebDetailsActivity.class);
-                            intent.putExtra("url", datalist.get(position).getUrl());
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onItemLongClick(View view, int position) {
-
-                        }
-                    });
-                    System.out.println("小说" + list.toString());
-                    for (int i = 0; i < list.size(); i++) {
-                        System.out.println("标题：" + list.get(i).getDayBean().getTitle_day());
+                    strings = new String[object.size()];
+                    Toast.makeText(MyApplyActivity.this, "查询成功", Toast.LENGTH_SHORT).show();
+                    for (int i = 0; i < object.size(); i++) {
+                        //strings = new String[object.size()];
+                        System.out.println(object.get(i));
+                        strings[i] = object.get(i).getDayBean().getObjectId();
+                        System.out.println(object.get(i).getDayBean().toString());
+                        System.out.println(">>>>>>" + strings[i]);
                     }
                 } else {
-                    Toast.makeText(MyApplyActivity.this, "网络" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("BMOB", e.toString());
+                    Toast.makeText(MyApplyActivity.this, "查询失败:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadList();
+            }
+        }, 2000);
     }
 
+    private void loadList() {
+        //一对多关联查询
+        //datalist.clear();
+            for (int i = 0; i < strings.length; i++) {
+                Log.d("debug", strings[i] + ">>>>>:");
+                BmobQuery<SelectAndResume> query = new BmobQuery<SelectAndResume>();
+                DayBean dayBean = new DayBean();
+                dayBean.setObjectId(strings[i]);
+                query.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
+                query.addWhereEqualTo("dayBean", new BmobPointer(dayBean));
+                query.include("dayBean");
+                query.findObjects(new FindListener<SelectAndResume>() {
+                    @Override
+                    public void done(List<SelectAndResume> list, BmobException e) {
+                        if (e == null) {
+                            ll_myapply.setVisibility(View.GONE);
+                            for (SelectAndResume sa : list) {
+                                //Log.d("debug", sa.toString());
+                                Log.d("debug", sa.getdayBean().toString());
+                                datalist.add(sa.getdayBean());
+                            }
+                        } else {
+                            Toast.makeText(MyApplyActivity.this, "网络" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+        }
+        rRecyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        DayAdapter adapter = new DayAdapter(getApplicationContext(), datalist, "已投递");
+        rRecyclerview.setItemAnimator(new DefaultItemAnimator());
+        //添加分割线
+        rRecyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL_LIST));
+        rRecyclerview.setAdapter(adapter);
+        adapter.setOnItemClickLitener(new DayAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //点击事件
+                Intent intent = new Intent(MyApplyActivity.this, JobWebDetailsActivity.class);
+                intent.putExtra("url", datalist.get(position).getUrl());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
+    }
+
+    @Override
+    public void run() {
+
+    }
 }

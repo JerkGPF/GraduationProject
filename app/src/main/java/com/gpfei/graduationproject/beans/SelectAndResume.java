@@ -6,7 +6,7 @@ import com.gpfei.graduationproject.beans.User;
 import cn.bmob.v3.BmobObject;
 
 public class SelectAndResume extends BmobObject {
-    private DayBean dayBean;
+    private DayBean dayBean ;
     private User user;
     private Boolean delivery;
     private Boolean collect;
@@ -28,6 +28,9 @@ public class SelectAndResume extends BmobObject {
         return dayBean;
     }
 
+    public DayBean getdayBean(){
+        return dayBean;
+    }
     public void setDayBean(DayBean dayBean) {
         this.dayBean = dayBean;
     }

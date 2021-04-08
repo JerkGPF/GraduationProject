@@ -13,6 +13,9 @@ public class DayBean extends BmobObject {
     private int dCount;
     private HrUser author;
 
+    public String getTableName() {
+        return "DayBean";
+    }
 
     public int getdCount() {
         return dCount;
