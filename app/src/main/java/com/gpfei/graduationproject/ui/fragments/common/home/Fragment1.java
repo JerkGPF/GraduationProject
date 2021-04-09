@@ -76,7 +76,7 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                     //添加数据到集合
                     datalist.addAll(list);
                     rRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
-                    DayAdapter adapter = new DayAdapter(getContext(), datalist,"投递");
+                    DayAdapter adapter = new DayAdapter(getContext(), datalist,"全职");
                     rRecyclerview.setItemAnimator(new DefaultItemAnimator());
                     //添加分割线
                     rRecyclerview.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));

@@ -14,13 +14,16 @@ import android.widget.Toast;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.HrUser;
+import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.ui.activities.common.MyApplyActivity;
 import com.gpfei.graduationproject.utils.ToastUtils;
 
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
@@ -52,7 +55,7 @@ public class HrMyFragment extends Fragment {
     }
 
     /**
-     * 查询一对一关联，查询当前用户发表的所有帖子
+     * 查询一对一关联，查询当前用户发表的所有职位
      */
     private void queryAuthor() {
         if (BmobUser.isLogin()) {
@@ -66,11 +69,13 @@ public class HrMyFragment extends Fragment {
                 public void done(List<DayBean> object, BmobException e) {
                     if (e == null) {
                         Toast.makeText(getActivity(), "查询成功", Toast.LENGTH_SHORT).show();
+                        String[] str = new String[object.size()];
                         //将所有的信息全部遍历出来
                         for (int i = 0; i < object.size(); i++) {
-                            System.out.println(object.get(i).getCompany_day());
-                            System.out.println(object.get(i).toString());
+                            str[i] = object.get(i).getObjectId();
+                            System.out.println("dayBean:"+object.get(i).toString());
                         }
+                        loadList(str);//将objectId数组传递给loadlist()
                     } else {
                         Log.e("BMOB", e.toString());
                         Toast.makeText(getActivity(), "查询失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -82,5 +87,32 @@ public class HrMyFragment extends Fragment {
             Toast.makeText(getActivity(), "请先登录", Toast.LENGTH_SHORT).show();
         }
     }
-
+    //查询出当前所有投递本公司的人员信息
+    private void loadList(String[] str) {
+        for (int i = 0; i < str.length; i++) {
+            Log.d("debug", str[i] + ">>>>>:");
+            BmobQuery<SelectAndResume> query = new BmobQuery<SelectAndResume>();
+            DayBean dayBean = new DayBean();
+            dayBean.setObjectId(str[i]);
+            query.addWhereEqualTo("delivery", true);
+            query.addWhereEqualTo("dayBean", new BmobPointer(dayBean));
+            query.include("user,dayBean.author");
+            query.findObjects(new FindListener<SelectAndResume>() {
+                @Override
+                public void done(List<SelectAndResume> list, BmobException e) {
+                    if (e == null){
+                        for (SelectAndResume sa : list) {
+                            Log.d("hello", sa.getUser().toString());
+                            System.out.println("////////////"+sa.getUser().getUsername());
+                            System.out.println("////////////"+sa.getUser().getMobilePhoneNumber());
+                            System.out.println("////////////"+sa.getUser().getEmail());
+                        }
+                        Toast.makeText(getActivity(), "查询成功", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(getActivity(), "网络故障，请重试", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
 }

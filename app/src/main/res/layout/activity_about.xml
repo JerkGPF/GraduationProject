@@ -61,7 +61,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="By day part-time team development"
+                    android:text="By gpfei development"
                     android:textColor="@color/gray"
                     android:textSize="11sp" />
 

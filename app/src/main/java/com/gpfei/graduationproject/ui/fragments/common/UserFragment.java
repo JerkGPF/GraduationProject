@@ -69,6 +69,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+
+    //定义一个回调接口
+    public interface CallBackValue{
+        public void SendMessageValue(String strValue);
+    }
+
     private void initView(View view) {
         rl_menu_item1 = (RelativeLayout) view.findViewById(R.id.rl_menu_item1);
         rl_menu_item1.setOnClickListener(this);

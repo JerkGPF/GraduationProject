@@ -26,10 +26,10 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
+        iv_back = findViewById(R.id.iv_back);
+        tv_title = findViewById(R.id.tv_title);
         tv_title.setText("关于我们");
-        tv_version = (TextView) findViewById(R.id.tv_version);
+        tv_version = findViewById(R.id.tv_version);
         //设置版本号
         String versions = "version " + VersionUtils.getVersionName(AboutActivity.this);
         tv_version.setText(versions);
@@ -39,11 +39,11 @@ public class AboutActivity extends AppCompatActivity {
                 finish();
             }
         });
-        tv_update = (TextView) findViewById(R.id.tv_update);
+        tv_update = findViewById(R.id.tv_update);
         tv_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showImageToast(AboutActivity.this,"已经是最新版本了哟~");
+                ToastUtils.showImageToast(AboutActivity.this, "已经是最新版本了哟~");
             }
         });
     }

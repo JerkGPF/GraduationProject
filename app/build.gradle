@@ -26,6 +26,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+//    repositories {
+//        flatDir {
+//            dirs 'libs'
+//        }
+//    }    // 此在android标签下添加
 }
 
 dependencies {
@@ -53,6 +58,9 @@ dependencies {
     implementation 'com.makeramen:roundedimageview:2.3.0'//圆形头像
     implementation 'com.youth.banner:banner:1.4.9'//轮播图
     implementation 'com.jwenfeng.pulltorefresh:library:1.0.3'//下拉刷新
+
+    //TODO 集成：1.2、配置IM SDK（bmob-im）版本和Data SDK（bmob-sdk）版本：特定版本的bmob-im依赖特定版本的bmob-sdk
+    //implementation 'cn.bmob.android:bmob-im:2.1.5@aar'
 
 
 
