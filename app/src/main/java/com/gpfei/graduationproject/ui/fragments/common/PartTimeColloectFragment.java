@@ -41,35 +41,30 @@ import static cn.bmob.v3.Bmob.getApplicationContext;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PartTimeFragment#newInstance} factory method to
+ * Use the {@link PartTimeColloectFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+public class PartTimeColloectFragment extends Fragment {
 
-
-/**
- * 由于布局和全职一致
- * 使用全职的xml文件
- */
-public class PartTimeFragment extends Fragment {
     private RecyclerView rRecyclerview;
     private List<WeekendBean> datalist = new ArrayList<>();
-    private LinearLayout ll_myapply;
+    private LinearLayout ll_myCollect;
     private PullToRefreshLayout refresh_job;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_full_time, container, false);
+        View view = inflater.inflate(R.layout.fragment_full_time_collect, container, false);
         initView(view);
         equal();
         return view;
     }
-
-
     private void initView(View view) {
+        ll_myCollect = view.findViewById(R.id.ll_myCollect);
         rRecyclerview = view.findViewById(R.id.rRecyclerview);
-        ll_myapply = view.findViewById(R.id.ll_myapply);
         refresh_job = view.findViewById(R.id.refresh_job);
         refresh_job.setRefreshListener(new BaseRefreshListener() {
             @Override
@@ -99,31 +94,33 @@ public class PartTimeFragment extends Fragment {
             }
         });
     }
-
     //先将所有的id查出来
     private void equal() {
         BmobQuery<PartAndResume> partAndResumeBmobQuery = new BmobQuery<>();
         partAndResumeBmobQuery.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
-        partAndResumeBmobQuery.addWhereEqualTo("delivery", true);
+        partAndResumeBmobQuery.addWhereEqualTo("collect", true);
         partAndResumeBmobQuery.findObjects(new FindListener<PartAndResume>() {
             @Override
             public void done(List<PartAndResume> object, BmobException e) {
                 if (e == null) {
                     String[] strings = new String[object.size()];//创建一个string类型的数组用来存储objectid
                     for (int i = 0; i < object.size(); i++) {
-                        System.out.println(object.get(i));
                         strings[i] = object.get(i).getWeekendBean().getObjectId();
-                        System.out.println(object.get(i).getWeekendBean().toString());
-                        System.out.println(">>>>>>" + strings[i]);
                     }
-                    loadList(strings);//将objectId数组传递给loadlist()
+                    //延迟加载，为了让toast动画展示完整
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadList(strings);//将objectId数组传递给loadlist()
+                        }
+                    },1500);
                 } else {
                     Log.e("BMOB", e.toString());
-                    Toast.makeText(getActivity(), "查询失败:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "查询失败，请重试" , Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
     }
     private void loadList(String[] strings) {
         //一对多关联查询
@@ -135,18 +132,15 @@ public class PartTimeFragment extends Fragment {
             weekendBean.setObjectId(strings[i]);
             query.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
             query.addWhereEqualTo("weekendBean", new BmobPointer(weekendBean));
-            query.addWhereEqualTo("delivery", true);
-
+            query.addWhereEqualTo("collect", true);
             query.include("weekendBean");
             query.findObjects(new FindListener<PartAndResume>() {
                 @Override
                 public void done(List<PartAndResume> list, BmobException e) {
                     if (e == null) {
-                        ll_myapply.setVisibility(View.GONE);
+                        ll_myCollect.setVisibility(View.GONE);
                         for (PartAndResume sa : list) {
-                            //Log.d("debug", sa.toString());
-                            Log.d("debug", sa.getWeekendBean().toString());
-                            datalist.add(sa.getweekendBean());
+                            datalist.add(sa.getWeekendBean());
                             send(datalist);//将所有的数据发送给适配器
                         }
                     } else {
@@ -156,10 +150,9 @@ public class PartTimeFragment extends Fragment {
             });
         }
     }
-
     private void send(List<WeekendBean> ls) {
         rRecyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        WeekendAdapter adapter = new WeekendAdapter(getApplicationContext(), ls, "兼职");
+        WeekendAdapter adapter = new WeekendAdapter(getApplicationContext(), ls, "已收藏");
         rRecyclerview.setItemAnimator(new DefaultItemAnimator());
         //添加分割线
         rRecyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL_LIST));
@@ -168,7 +161,7 @@ public class PartTimeFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 //点击事件
-                Intent intent = new Intent(getContext(), JobWebDetailsActivity.class);
+                Intent intent = new Intent(getActivity(), JobWebDetailsActivity.class);
                 intent.putExtra("url", ls.get(position).getUrl());
                 startActivity(intent);
             }
@@ -179,4 +172,5 @@ public class PartTimeFragment extends Fragment {
         });
 
     }
+
 }

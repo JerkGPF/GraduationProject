@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center">
-            <com.gpfei.graduationproject.utils.SmileToastView
+            <com.gpfei.graduationproject.utils.view.SmileToastView
                 android:id="@+id/smileView"
                 android:layout_width="50dp"
                 android:layout_height="50dp"

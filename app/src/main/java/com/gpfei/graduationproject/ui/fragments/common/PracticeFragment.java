@@ -25,6 +25,7 @@ import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.beans.WeekendBean;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
+import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
 import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
 import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
@@ -77,6 +78,8 @@ public class PracticeFragment extends Fragment {
                         equal();
                         //结束刷新
                         refresh_job.finishRefresh();
+                        SmileToast smileToast = new SmileToast();
+                        smileToast.smile("加载完成");
                     }
                 }, 2000);
             }
@@ -130,6 +133,8 @@ public class PracticeFragment extends Fragment {
             selectionBean.setObjectId(strings[i]);
             query.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
             query.addWhereEqualTo("selectionBean", new BmobPointer(selectionBean));
+            query.addWhereEqualTo("delivery", true);
+
             query.include("selectionBean");
             query.findObjects(new FindListener<PracticeAndResume>() {
                 @Override

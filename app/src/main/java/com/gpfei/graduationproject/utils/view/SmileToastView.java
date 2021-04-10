@@ -1,4 +1,4 @@
-package com.gpfei.graduationproject.utils;
+package com.gpfei.graduationproject.utils.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
