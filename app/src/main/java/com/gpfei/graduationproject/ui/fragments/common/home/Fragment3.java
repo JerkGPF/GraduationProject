@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,11 @@ import android.widget.RelativeLayout;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.adapters.SelectionAdapter;
+import com.gpfei.graduationproject.beans.PartAndResume;
+import com.gpfei.graduationproject.beans.PracticeAndResume;
 import com.gpfei.graduationproject.beans.SelectionBean;
+import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.beans.WeekendBean;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 import com.gpfei.graduationproject.utils.ToastUtils;
@@ -27,8 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -74,7 +81,7 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                     //添加数据到集合
                     datalist.addAll(list);
                     rRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
-                    SelectionAdapter adapter = new SelectionAdapter(getContext(), datalist);
+                    SelectionAdapter adapter = new SelectionAdapter(getContext(), datalist,"实习");
                     rRecyclerview.setItemAnimator(new DefaultItemAnimator());
                     rRecyclerview.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL_LIST));
                     rRecyclerview.setAdapter(adapter);
@@ -90,11 +97,12 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                             startActivity(intent);
                         }
                         @Override
-                        public void onItemLongClick(View view, int position) {
+                        public void onItemLongClick(View view, int pos) {
                             //长按弹出列表提示框
                             final ArrayList<String> list = new ArrayList<>();
                             list.add("分享");
                             list.add("投递");
+                            list.add("收藏");
                             list.add("取消");
                             final OptionCenterDialog optionCenterDialog = new OptionCenterDialog();
                             optionCenterDialog.show(getContext(), list);
@@ -106,7 +114,10 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                                             ToastUtils.showImageToast(getContext(),"分享成功");
                                             break;
                                         case 1:
-                                            ToastUtils.showImageToast(getContext(),"投递成功");
+                                            setMessage(pos, "投递", true);
+                                            break;
+                                        case 2:
+                                            setMessage(pos, "收藏", true);
                                             break;
                                         default:
                                             break;
@@ -124,6 +135,40 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    //封装投递与收藏状态
+    private void setMessage(int pos, String str, Boolean state) {
+        if (BmobUser.isLogin()) {
+            User user = BmobUser.getCurrentUser(User.class);
+            SelectionBean selectionBean = new SelectionBean();
+            selectionBean.setObjectId(datalist.get(pos).getObjectId());
+            final PracticeAndResume practiceAndResume = new PracticeAndResume();
+            practiceAndResume.setSelectionBean(selectionBean);
+            practiceAndResume.setUser(user);
+            //收藏状态执行setMsg
+            if (str.equals("收藏")) {
+                practiceAndResume.setCollect(state);
+                practiceAndResume.setDelivery(false);
+            } else if (str.equals("投递")) {
+                //投递状态执行setDelivery
+                practiceAndResume.setDelivery(state);
+                practiceAndResume.setCollect(false);
+            }
+            practiceAndResume.save(new SaveListener<String>() {
+                @Override
+                public void done(String s, BmobException e) {
+                    if (e == null) {
+                        ToastUtils.showImageToast(getContext(), str + "成功");
+                    } else {
+                        ToastUtils.showTextToast(getContext(), str + "失败");
+                        Log.e("出错", e.getMessage());
+                    }
+                }
+            });
+        } else {
+            ToastUtils.showTextToast(getContext(), "请先登录");
+        }
     }
 
     @Override

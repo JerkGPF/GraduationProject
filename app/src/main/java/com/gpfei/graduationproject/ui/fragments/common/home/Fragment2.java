@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,10 @@ import android.widget.RelativeLayout;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.adapters.WeekendAdapter;
+import com.gpfei.graduationproject.beans.DayBean;
+import com.gpfei.graduationproject.beans.PartAndResume;
+import com.gpfei.graduationproject.beans.SelectAndResume;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.beans.WeekendBean;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
@@ -27,8 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,7 +80,7 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                     //添加数据到集合
                     datalist.addAll(list);
                     rRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
-                    WeekendAdapter adapter = new WeekendAdapter(getContext(), datalist);
+                    WeekendAdapter adapter = new WeekendAdapter(getContext(), datalist,"兼职");
                     rRecyclerview.setItemAnimator(new DefaultItemAnimator());
                     rRecyclerview.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
                     rRecyclerview.setAdapter(adapter);
@@ -86,16 +93,17 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                         public void onItemClick(View view, int position) {
                             //点击事件
                             Intent intent = new Intent(getContext(), JobWebDetailsActivity.class);
-                            intent.putExtra("url", datalist.get(position).getUrl_weekend());
+                            intent.putExtra("url", datalist.get(position).getUrl());
                             startActivity(intent);
                         }
 
                         @Override
-                        public void onItemLongClick(View view, int position) {
+                        public void onItemLongClick(View view, int pos) {
                             //长按弹出列表提示框
                             final ArrayList<String> list = new ArrayList<>();
                             list.add("分享");
                             list.add("投递");
+                            list.add("收藏");
                             list.add("取消");
                             final OptionCenterDialog optionCenterDialog = new OptionCenterDialog();
                             optionCenterDialog.show(getContext(), list);
@@ -107,7 +115,10 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                                             ToastUtils.showImageToast(getContext(), "分享成功");
                                             break;
                                         case 1:
-                                            ToastUtils.showImageToast(getContext(), "投递成功");
+                                            setMessage(pos, "投递", true);
+                                            break;
+                                        case 2:
+                                            setMessage(pos, "收藏", true);
                                             break;
                                         default:
                                             break;
@@ -125,6 +136,40 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    //封装投递与收藏状态
+    private void setMessage(int pos, String str, Boolean state) {
+        if (BmobUser.isLogin()) {
+            User user = BmobUser.getCurrentUser(User.class);
+            WeekendBean weekendBean = new WeekendBean();
+            weekendBean.setObjectId(datalist.get(pos).getObjectId());
+            final PartAndResume partAndResume = new PartAndResume();
+            partAndResume.setWeekendBean(weekendBean);
+            partAndResume.setUser(user);
+            //收藏状态执行setMsg
+            if (str.equals("收藏")) {
+                partAndResume.setCollect(state);
+                partAndResume.setDelivery(false);
+            } else if (str.equals("投递")) {
+                //投递状态执行setDelivery
+                partAndResume.setDelivery(state);
+                partAndResume.setCollect(false);
+            }
+            partAndResume.save(new SaveListener<String>() {
+                @Override
+                public void done(String s, BmobException e) {
+                    if (e == null) {
+                        ToastUtils.showImageToast(getContext(), str + "成功");
+                    } else {
+                        ToastUtils.showTextToast(getContext(), str + "失败");
+                        Log.e("出错", e.getMessage());
+                    }
+                }
+            });
+        } else {
+            ToastUtils.showTextToast(getContext(), "请先登录");
+        }
     }
 
     @Override

@@ -76,6 +76,7 @@ public class HrMyFragment extends Fragment {
                             System.out.println("dayBean:"+object.get(i).toString());
                         }
                         loadList(str);//将objectId数组传递给loadlist()
+                        Toast.makeText(getActivity(), "职位信息"+object.get(0).toString(), Toast.LENGTH_SHORT).show();
                     } else {
                         Log.e("BMOB", e.toString());
                         Toast.makeText(getActivity(), "查询失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -107,7 +108,7 @@ public class HrMyFragment extends Fragment {
                             System.out.println("////////////"+sa.getUser().getMobilePhoneNumber());
                             System.out.println("////////////"+sa.getUser().getEmail());
                         }
-                        Toast.makeText(getActivity(), "查询成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "用户姓名"+list.get(0).getUser().getUsername(), Toast.LENGTH_SHORT).show();
                     }else {
                         Toast.makeText(getActivity(), "网络故障，请重试", Toast.LENGTH_SHORT).show();
                     }

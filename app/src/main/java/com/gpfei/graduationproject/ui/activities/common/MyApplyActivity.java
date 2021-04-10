@@ -1,10 +1,16 @@
 package com.gpfei.graduationproject.ui.activities.common;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +21,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.tabs.TabLayout;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.adapters.DayAdapter;
 import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.ui.fragments.common.FullTimeFragment;
+import com.gpfei.graduationproject.ui.fragments.common.HomeFragment;
+import com.gpfei.graduationproject.ui.fragments.common.PartTimeFragment;
+import com.gpfei.graduationproject.ui.fragments.common.PracticeFragment;
+import com.gpfei.graduationproject.ui.fragments.common.home.Fragment1;
+import com.gpfei.graduationproject.ui.fragments.common.home.Fragment2;
+import com.gpfei.graduationproject.ui.fragments.common.home.Fragment3;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -32,26 +46,64 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
 public class MyApplyActivity extends AppCompatActivity {
-    private RecyclerView rRecyclerview;
-    private List<DayBean> datalist = new ArrayList<>();
+    private TabLayout my_tab;
+    private ViewPager my_viewpager;
+    private List<Fragment> fragments;
+    private List<String> titles;
+    private FullTimeFragment fragment_full;
+    private PartTimeFragment fragment_part;
+    private PracticeFragment fragment_practice;
+    FragmentPagerAdapter fragmentPagerAdapter;
     private ImageView iv_back;
     private TextView tv_title;
-    private LinearLayout ll_myapply;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_apply);
         initView();
-        equal();
     }
     private void initView() {
-        rRecyclerview = findViewById(R.id.rRecyclerview);
+        my_tab = findViewById(R.id.my_tab);
+        my_viewpager = findViewById(R.id.my_viewpager);
         iv_back = findViewById(R.id.iv_back);
         tv_title = findViewById(R.id.tv_title);
-        ll_myapply = findViewById(R.id.ll_myapply);
-
         tv_title.setText("我的投递");
+        fragment_full = new FullTimeFragment();
+        fragment_part = new PartTimeFragment();
+        fragment_practice = new PracticeFragment();
+        //添加fragment
+        fragments = new ArrayList<>();
+        fragments.add(fragment_full);
+        fragments.add(fragment_part);
+        fragments.add(fragment_practice);
+        //添加标题
+        titles = new ArrayList<>();
+        titles.add("全职");
+        titles.add("兼职");
+        titles.add("实习");
+
+        fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @NonNull
+            @Override
+            public Fragment getItem(int position) {
+                return fragments.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return fragments.size();
+            }
+
+            @Nullable
+            @Override
+            public CharSequence getPageTitle(int position) {
+                return titles.get(position);
+            }
+        };
+
+        my_viewpager.setAdapter(fragmentPagerAdapter);
+        my_tab.setupWithViewPager(my_viewpager);
+
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,82 +112,6 @@ public class MyApplyActivity extends AppCompatActivity {
         });
     }
 
-    //先将所有的id查出来
-    private void equal() {
-        BmobQuery<SelectAndResume> selectAndResumeBmobQuery = new BmobQuery<>();
-        selectAndResumeBmobQuery.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
-        selectAndResumeBmobQuery.addWhereEqualTo("delivery", true);
-        selectAndResumeBmobQuery.findObjects(new FindListener<SelectAndResume>() {
-            @Override
-            public void done(List<SelectAndResume> object, BmobException e) {
-                if (e == null) {
-                    Toast.makeText(MyApplyActivity.this, "查询成功", Toast.LENGTH_SHORT).show();
-                    String[] strings = new String[object.size()];//创建一个string类型的数组用来存储objectid
-                    for (int i = 0; i < object.size(); i++) {
-                        System.out.println(object.get(i));
-                        strings[i] = object.get(i).getDayBean().getObjectId();
-                        System.out.println(object.get(i).getDayBean().toString());
-                        System.out.println(">>>>>>" + strings[i]);
-                    }
-                    loadList(strings);//将objectId数组传递给loadlist()
-                } else {
-                    Log.e("BMOB", e.toString());
-                    Toast.makeText(MyApplyActivity.this, "查询失败:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
-    }
-    private void loadList(String[] strings) {
-        //一对多关联查询
-        datalist.clear();
-        for (int i = 0; i < strings.length; i++) {
-            Log.d("debug", strings[i] + ">>>>>:");
-            BmobQuery<SelectAndResume> query = new BmobQuery<SelectAndResume>();
-            DayBean dayBean = new DayBean();
-            dayBean.setObjectId(strings[i]);
-            query.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
-            query.addWhereEqualTo("dayBean", new BmobPointer(dayBean));
-            query.include("dayBean");
-            query.findObjects(new FindListener<SelectAndResume>() {
-                @Override
-                public void done(List<SelectAndResume> list, BmobException e) {
-                    if (e == null) {
-                        ll_myapply.setVisibility(View.GONE);
-                        for (SelectAndResume sa : list) {
-                            //Log.d("debug", sa.toString());
-                            Log.d("debug", sa.getdayBean().toString());
-                            datalist.add(sa.getdayBean());
-                            send(datalist);//将所有的数据发送给适配器
-                        }
-                    } else {
-                        Toast.makeText(MyApplyActivity.this, "网络" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
-    }
 
-    private void send(List<DayBean> ls) {
-        rRecyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        DayAdapter adapter = new DayAdapter(getApplicationContext(), ls, "已投递");
-        rRecyclerview.setItemAnimator(new DefaultItemAnimator());
-        //添加分割线
-        rRecyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL_LIST));
-        rRecyclerview.setAdapter(adapter);
-        adapter.setOnItemClickLitener(new DayAdapter.OnItemClickLitener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                //点击事件
-                Intent intent = new Intent(MyApplyActivity.this, JobWebDetailsActivity.class);
-                intent.putExtra("url", ls.get(position).getUrl());
-                startActivity(intent);
-            }
-            @Override
-            public void onItemLongClick(View view, int position) {
-
-            }
-        });
-
-    }
 }

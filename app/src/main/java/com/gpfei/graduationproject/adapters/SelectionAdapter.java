@@ -19,6 +19,8 @@ import java.util.List;
 public class SelectionAdapter extends RecyclerView.Adapter<com.gpfei.graduationproject.adapters.SelectionAdapter.MyViewHolder> {
     private List<SelectionBean> datalist=new ArrayList<>();
     private Context context;
+    private String string;
+
 
     public interface OnItemClickLitener
     {
@@ -32,9 +34,10 @@ public class SelectionAdapter extends RecyclerView.Adapter<com.gpfei.graduationp
         this.mOnItemClickLitener = mOnItemClickLitener;
     }
 
-    public SelectionAdapter(Context context, List<SelectionBean> datalist) {
+    public SelectionAdapter(Context context, List<SelectionBean> datalist,String string) {
         this.context=context;
         this.datalist=datalist;
+        this.string = string;
     }
 
     @Override
@@ -52,6 +55,8 @@ public class SelectionAdapter extends RecyclerView.Adapter<com.gpfei.graduationp
         holder.tv_company_selection.setText(datalist.get(position).getCompany_selection());
         holder.tv_time_selection.setText(datalist.get(position).getCreatedAt());
         holder.tv_count_s.setText(datalist.get(position).getsCount()+"人看过");
+        holder.tv_delivery_day.setText(string);
+
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null)
@@ -91,6 +96,8 @@ public class SelectionAdapter extends RecyclerView.Adapter<com.gpfei.graduationp
         private TextView tv_address_selection;
         private TextView tv_company_selection;
         private TextView tv_count_s;
+        private TextView tv_delivery_day;
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -100,6 +107,8 @@ public class SelectionAdapter extends RecyclerView.Adapter<com.gpfei.graduationp
             tv_address_selection=(TextView)itemView.findViewById(R.id.tv_address_selection);
             tv_company_selection=(TextView)itemView.findViewById(R.id.tv_company_selection);
             tv_count_s=(TextView)itemView.findViewById(R.id.tv_count_s);
+            tv_delivery_day = itemView.findViewById(R.id.tv_delivery_day);
+
         }
     }
 

@@ -1,13 +1,12 @@
 package com.gpfei.graduationproject.beans;
 
-
 import cn.bmob.v3.BmobObject;
 
-public class SelectAndResume extends BmobObject {
-    private DayBean dayBean ;
+public class PartAndResume extends BmobObject {
     private User user;
     private Boolean delivery;
     private Boolean collect;
+    private WeekendBean weekendBean;
 
     public Boolean getDelivery() {
         return delivery;
@@ -22,17 +21,28 @@ public class SelectAndResume extends BmobObject {
         this.collect = collect;
     }
 
-    public DayBean getDayBean() {
-        return dayBean;
+//    public DayBean getDayBean() {
+//        return dayBean;
+//    }
+//
+//    public DayBean getdayBean(){
+//        return dayBean;
+//    }
+//    public void setDayBean(DayBean dayBean) {
+//        this.dayBean = dayBean;
+//    }
+
+    public WeekendBean getweekendBean() {
+        return weekendBean;
     }
 
-    public DayBean getdayBean(){
-        return dayBean;
-    }
-    public void setDayBean(DayBean dayBean) {
-        this.dayBean = dayBean;
+    public WeekendBean getWeekendBean() {
+        return weekendBean;
     }
 
+    public void setWeekendBean(WeekendBean weekendBean) {
+        this.weekendBean = weekendBean;
+    }
     public User getUser() {
         return user;
     }
@@ -41,13 +51,5 @@ public class SelectAndResume extends BmobObject {
         this.user = user;
     }
 
-    @Override
-    public String toString() {
-        return "SelectAndResume{" +
-                "dayBean=" + dayBean +
-                ", user=" + user +
-                ", delivery=" + delivery +
-                ", collect=" + collect +
-                '}';
-    }
+
 }

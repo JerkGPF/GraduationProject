@@ -1,14 +1,17 @@
 package com.gpfei.graduationproject.beans;
 
 
-public class WeekendBean {
+import cn.bmob.v3.BmobObject;
+
+public class WeekendBean extends BmobObject {
     private String title_weekend;
     private String money_weekend;
-    private String count_weekend;
     private String company_weekend;
     private String address_weekend;
-    private String createdAt;
     private int wCount;
+    private String url;
+
+    private HrUser author;
 
     public int getwCount() {
         return wCount;
@@ -18,13 +21,6 @@ public class WeekendBean {
         this.wCount = wCount;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
 
     private String url_weekend;
 
@@ -52,14 +48,6 @@ public class WeekendBean {
         this.money_weekend = money_weekend;
     }
 
-    public String getCount_weekend() {
-        return count_weekend;
-    }
-
-    public void setCount_weekend(String count_weekend) {
-        this.count_weekend = count_weekend;
-    }
-
     public String getCompany_weekend() {
         return company_weekend;
     }
@@ -76,4 +64,19 @@ public class WeekendBean {
         this.address_weekend = address_weekend;
     }
 
+    public HrUser getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(HrUser author) {
+        this.author = author;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

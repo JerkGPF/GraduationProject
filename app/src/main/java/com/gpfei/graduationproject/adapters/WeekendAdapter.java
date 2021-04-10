@@ -19,8 +19,7 @@ import java.util.List;
 public class WeekendAdapter extends RecyclerView.Adapter<com.gpfei.graduationproject.adapters.WeekendAdapter.MyViewHolder> {
     private List<WeekendBean> datalist=new ArrayList<>();
     private Context context;
-
-
+    private String string;
 
     public interface OnItemClickLitener
     {
@@ -34,9 +33,10 @@ public class WeekendAdapter extends RecyclerView.Adapter<com.gpfei.graduationpro
         this.mOnItemClickLitener = mOnItemClickLitener;
     }
 
-    public WeekendAdapter(Context context, List<WeekendBean> datalist) {
+    public WeekendAdapter(Context context, List<WeekendBean> datalist,String string) {
         this.context=context;
         this.datalist=datalist;
+        this.string = string;
     }
 
     @Override
@@ -54,6 +54,8 @@ public class WeekendAdapter extends RecyclerView.Adapter<com.gpfei.graduationpro
         holder.tv_company_weekend.setText(datalist.get(position).getCompany_weekend());
         holder.tv_time_weekend.setText(datalist.get(position).getCreatedAt());
         holder.tv_count_w.setText(datalist.get(position).getwCount()+"人看过");
+        holder.tv_delivery_day.setText(string);
+
 
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null)
@@ -93,6 +95,8 @@ public class WeekendAdapter extends RecyclerView.Adapter<com.gpfei.graduationpro
         private TextView tv_address_weekend;
         private TextView tv_company_weekend;
         private TextView tv_count_w;
+        private TextView tv_delivery_day;
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -102,6 +106,8 @@ public class WeekendAdapter extends RecyclerView.Adapter<com.gpfei.graduationpro
             tv_address_weekend=(TextView)itemView.findViewById(R.id.tv_address_weekend);
             tv_company_weekend=(TextView)itemView.findViewById(R.id.tv_company_weekend);
             tv_count_w=(TextView)itemView.findViewById(R.id.tv_count_w);
+            tv_delivery_day = itemView.findViewById(R.id.tv_delivery_day);
+
         }
     }
 

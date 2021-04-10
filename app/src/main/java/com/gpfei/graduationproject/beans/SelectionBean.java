@@ -1,14 +1,14 @@
 package com.gpfei.graduationproject.beans;
 
 
+import cn.bmob.v3.BmobObject;
 
-public class SelectionBean {
+public class SelectionBean extends BmobObject {
     private String title_selection;
     private String url_selection;
     private String address_selection;
     private String money_selection;
     private String company_selection;
-    private String createdAt;
     private int sCount;
 
     public int getsCount() {
@@ -17,14 +17,6 @@ public class SelectionBean {
 
     public void setsCount(int sCount) {
         this.sCount = sCount;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getTitle_selection() {
