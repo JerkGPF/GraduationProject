@@ -16,9 +16,9 @@ public class HelpActivity extends AppCompatActivity {
     private ImageView iv_back;
     private TextView tv_title;
     private ExpandableListView my_expandable;
-    String[] groupArray={"怎么使用“我”的页面？","兼职怎么报名？","兼职要收费不？"};
+    String[] groupArray={"怎么使用“我”的页面？","兼职怎么报名？","软件收费不？"};
     String[][] childArray={{"a.注册登录。b.可在我的名片编辑和查看我的简历。c.可以查看我的报名情况。d.每天可以签到。e.遇到问题，投诉建议都可以进行反馈。"},{"兼职怎么报名？点开首页的列表，进入可以进行报名参加兼职。"},
-            {"兼职信息都是免费的，如有收费，可以在平台进行投诉反馈，我们工作人员会第一时间进行核实处理。"}};
+            {"平台招聘信息都是免费的，如有收费，可以在平台进行投诉反馈，我们工作人员会第一时间进行核实处理。"}};
 
 
     @Override

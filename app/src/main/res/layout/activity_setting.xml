@@ -74,7 +74,16 @@
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@id/iv_my_item1"
                 android:layout_centerVertical="true"/>
+            <TextView
+                android:id="@+id/set_cace_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ss"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/temp"/>
+
             <ImageView
+                android:id="@+id/temp"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/right"

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.utils.DataCleanManager;
 import com.gpfei.graduationproject.utils.ToastUtils;
 import com.longsh.optionframelibrary.OptionBottomDialog;
 import com.longsh.optionframelibrary.OptionMaterialDialog;
@@ -31,6 +32,8 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private RelativeLayout rl_setting_menu3;
     private Button btn_exit;
     private View view_line_setting;
+    private TextView cace_tv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,19 +42,22 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         initView();
     }
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
+        iv_back =  findViewById(R.id.iv_back);
+        tv_title =  findViewById(R.id.tv_title);
         tv_title.setText("我的设置");
         iv_back.setOnClickListener(this);
-        rl_setting_menu1 = (RelativeLayout) findViewById(R.id.rl_setting_menu1);
+        rl_setting_menu1 =  findViewById(R.id.rl_setting_menu1);
         rl_setting_menu1.setOnClickListener(this);
-        rl_setting_menu2 = (RelativeLayout) findViewById(R.id.rl_setting_menu2);
+        rl_setting_menu2 =  findViewById(R.id.rl_setting_menu2);
         rl_setting_menu2.setOnClickListener(this);
-        rl_setting_menu3 = (RelativeLayout) findViewById(R.id.rl_setting_menu3);
+        rl_setting_menu3 =  findViewById(R.id.rl_setting_menu3);
         rl_setting_menu3.setOnClickListener(this);
-        btn_exit = (Button) findViewById(R.id.btn_exit);
+        btn_exit =  findViewById(R.id.btn_exit);
         btn_exit.setOnClickListener(this);
-        view_line_setting = (View) findViewById(R.id.view_line_setting);
+        view_line_setting = findViewById(R.id.view_line_setting);
+
+        cace_tv =findViewById(R.id.set_cace_tv);
+
         BmobUser bmobUser = BmobUser.getCurrentUser(MyUser.class);
         if (bmobUser != null) {
             //登录后显示控件
@@ -61,7 +67,20 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         }
 
 
+        caceMuch();//显示缓存大小
+
+
     }
+
+    //计算缓存
+    private void caceMuch() {
+        try {
+            cace_tv.setText(DataCleanManager.getTotalCacheSize(cace_tv.getContext()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -70,19 +89,20 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(new Intent(SettingActivity.this, ModifyPassWordActivity.class));
                 break;
             case R.id.rl_setting_menu2:
-
                 final OptionMaterialDialog mMaterialDialog = new OptionMaterialDialog(SettingActivity.this);
                 mMaterialDialog.setTitle("提示")
                         .setTitleTextSize((float) 18)
                         .setMessage("确定要清除缓存吗？")
                         .setMessageTextSize((float) 15)
-                        .setPositiveButtonTextSize(14)
-                        .setNegativeButtonTextSize(14)
+                        .setPositiveButtonTextSize(12)
+                        .setNegativeButtonTextSize(12)
                         .setPositiveButton("确定", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                DataCleanManager.clearAllCache(rl_setting_menu2.getContext());//清空缓存
                                 ToastUtils.showImageToast(SettingActivity.this, "成功清除缓存");
                                 mMaterialDialog.dismiss();
+                                caceMuch();//重新计算缓存
                             }
                         })
                         .setNegativeButton("取消",
@@ -101,8 +121,6 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                                     }
                                 })
                         .show();
-
-
                 break;
             case R.id.rl_setting_menu3:
                 ToastUtils.showImageToast(SettingActivity.this, "已经是最新版");

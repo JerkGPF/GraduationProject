@@ -42,14 +42,14 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
-        ll_collect = (LinearLayout) findViewById(R.id.ll_collect);
+        iv_back = findViewById(R.id.iv_back);
+        tv_title = findViewById(R.id.tv_title);
+        ll_collect = findViewById(R.id.ll_collect);
 
-        ll_error_state = (LinearLayout) findViewById(R.id.ll_error_state);
-        mWebView = (WebView) findViewById(R.id.mWebView);
-        iv_sharing = (ImageView) findViewById(R.id.iv_sharing);
-        btn_load = (Button) findViewById(R.id.btn_load);
+        ll_error_state = findViewById(R.id.ll_error_state);
+        mWebView = findViewById(R.id.mWebView);
+        iv_sharing = findViewById(R.id.iv_sharing);
+        btn_load = findViewById(R.id.btn_load);
         btn_load.setOnClickListener(this);
         tv_title.setText("返回");
         iv_back.setOnClickListener(new View.OnClickListener() {

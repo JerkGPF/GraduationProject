@@ -1,5 +1,7 @@
 package com.gpfei.graduationproject.ui.fragments.common;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.Toast;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.adapters.WeekendAdapter;
 import com.gpfei.graduationproject.beans.PartAndResume;
+import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.beans.WeekendBean;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
@@ -36,6 +40,7 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 import static cn.bmob.v3.Bmob.getApplicationContext;
 
@@ -50,6 +55,7 @@ public class PartTimeColloectFragment extends Fragment {
     private List<WeekendBean> datalist = new ArrayList<>();
     private LinearLayout ll_myCollect;
     private PullToRefreshLayout refresh_job;
+    String[] objId;
 
 
 
@@ -142,6 +148,8 @@ public class PartTimeColloectFragment extends Fragment {
                         for (PartAndResume sa : list) {
                             datalist.add(sa.getWeekendBean());
                             send(datalist);//将所有的数据发送给适配器
+                            sendObjectId(sa.getObjectId());//将objectId发出
+
                         }
                     } else {
                         Toast.makeText(getActivity(), "网络" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -150,6 +158,30 @@ public class PartTimeColloectFragment extends Fragment {
             });
         }
     }
+    private void sendObjectId(String objectId) {
+        objId = new String[datalist.size()];
+        for (int i = 0; i < datalist.size(); i++) {
+            objId[i] = objectId;
+        }
+    }
+
+    private void handle(int i) {
+        PartAndResume partAndResume = new PartAndResume();
+        partAndResume.setCollect(false);
+        partAndResume.update(objId[i], new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    SmileToast smileToast = new SmileToast();
+                    smileToast.smile("取消完成");
+                } else {
+                    Toast.makeText(getActivity(), "取消失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+    }
+
     private void send(List<WeekendBean> ls) {
         rRecyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         WeekendAdapter adapter = new WeekendAdapter(getApplicationContext(), ls, "已收藏");
@@ -166,9 +198,32 @@ public class PartTimeColloectFragment extends Fragment {
                 startActivity(intent);
             }
             @Override
-            public void onItemLongClick(View view, int position) {
-
+            public void onItemLongClick(View view, int pos) {
+                //长按弹出列表提示框
+                String yes = "<font color='#2EC667'>" + "是" + "</font>";
+                String no = "<font color='#2EC667'>" + "否" + "</font>";
+                AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                        .setMessage("确定取消收藏吗？")//设置对话框的内容
+                        //设置对话框的按钮
+                        .setNegativeButton(Html.fromHtml(no), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(Html.fromHtml(yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //逻辑处理
+                                handle(pos);
+                                datalist.clear();
+                                equal();
+                                dialog.dismiss();
+                            }
+                        }).create();
+                dialog.show();
             }
+
         });
 
     }

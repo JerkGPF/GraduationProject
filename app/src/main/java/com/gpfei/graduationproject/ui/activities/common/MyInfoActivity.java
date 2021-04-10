@@ -10,6 +10,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,21 +18,30 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
+import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 import com.longsh.optionframelibrary.OptionBottomDialog;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +50,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MyInfoActivity extends AppCompatActivity implements View.OnClickListener {
+    private PullToRefreshLayout refreshLayout;
     private ImageView iv_back;
     private TextView tv_title;
     private ImageView iv_user_head;
@@ -51,15 +62,15 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     private TextView tv_username;
     private TextView tv_nick;
     private TextView tv_motto;
-
-    public static final int REQUEST_CAMERA = 1;
-    public static final int REQUEST_ALBUM = 2;
-    public static final int REQUEST_CROP = 3;
+    private Uri imageUri;
+    private static final int REQUEST_CAPTURE = 2;
     public static final int REQUEST_INFO = 4;
-    public static final int CAMERA_PERMISSION_CODE = 5;
-    public static final int ALBUM_PERMISSION_CODE = 6;
-    public static final String IMAGE_UNSPECIFIED = "image/*";
-    private File mImageFile;
+    private static final int REQUEST_PICTURE = 5;
+    private static final int RESULT_CROP = 7;
+    private static final int GALLERY_ACTIVITY_CODE = 9;
+    private Uri localUri = null;
+
+    private static final String TAG = "MyInfoActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +99,34 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         rl_to_mydata.setOnClickListener(this);
         rl_id = findViewById(R.id.rl_id);
         rl_id.setOnClickListener(this);
+        refreshLayout = findViewById(R.id.refresh);
+        refreshLayout.setRefreshListener(new BaseRefreshListener() {
+            @Override
+            public void refresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showUserInfo();
+                        //结束刷新
+                        refreshLayout.finishRefresh();
+                        SmileToast smileToast = new SmileToast();
+                        smileToast.smile("加载完成");
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void loadMore() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showTextToast(MyInfoActivity.this,"没有更多内容了哟~");
+                        //结束加载更多
+                        refreshLayout.finishLoadMore();
+                    }
+                }, 2000);
+            }
+        });
         //显示用户信息
         showUserInfo();
     }
@@ -129,6 +168,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 finish();
                 break;
             case R.id.rl_modify_user_head:
+                //Android6.0以上要获取动态权限
+                //先判断该页面是否已经授予拍照权限
                 methodRequiresTwoPermission();//调用权限
                 List<String> stringList = new ArrayList<String>();
                 stringList.add("拍照");
@@ -138,15 +179,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         if (position == 0) {
-                            //Android6.0以上要获取动态权限
-                            //先判断该页面是否已经授予拍照权限
-                            if (ContextCompat.checkSelfPermission(MyInfoActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                                //获取拍照权限
-                                ActivityCompat.requestPermissions(MyInfoActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                            } else {
-                                //拍照
-                                selectCamera();
-                            }
+                            //拍照
+                            openCamera();
                         }
                         if (position == 1) {
                             //调用相册
@@ -173,7 +207,6 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.rl_to_mydata:
                 startActivity(new Intent(MyInfoActivity.this, MyDataActivity.class));
                 break;
-
         }
 
     }
@@ -190,66 +223,137 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     //选择相机
-    private void selectCamera() {
-        mImageFile = new File(Environment.getExternalStorageDirectory(), System.currentTimeMillis() + ".jpg");
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri fileUri = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {  //如果是7.0以上，使用FileProvider，否则会报错
-            fileUri = FileProvider.getUriForFile(MyInfoActivity.this, "com.gpfei.graduationproject.fileprovider", mImageFile);
-        } else {
-            fileUri = Uri.fromFile(mImageFile);
+    private void openCamera() {  //调用相机拍照
+        Intent intent = new Intent();
+        File file = getOutputMediaFile(); //工具类稍后会给出
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {  //针对Android7.0，需要通过FileProvider封装过的路径，提供给外部调用
+            imageUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);//通过FileProvider创建一个content类型的Uri，进行封装
+        } else { //7.0以下，如果直接拿到相机返回的intent值，拿到的则是拍照的原图大小，很容易发生OOM，所以我们同样将返回的地址，保存到指定路径，返回到Activity时，去指定路径获取，压缩图片
+            imageUri = Uri.fromFile(file);
         }
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        startActivityForResult(cameraIntent, REQUEST_CAMERA);
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//将拍取的照片保存到指定URI
+        startActivityForResult(intent, REQUEST_CAPTURE);//启动拍照
     }
+
+    //建立保存头像的路径及名称
+    private File getOutputMediaFile() {
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                + "/Android/data/"
+                + getApplicationContext().getPackageName()
+                + "/Files");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        File mediaFile;
+        String mImageName = "head.png";
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+        return mediaFile;
+    }
+
+
+    //保存图像
+    private void storeImage(Bitmap image) {
+        File pictureFile = getOutputMediaFile();
+        if (pictureFile == null) {
+            Log.d(TAG, "Error creating media file, check storage permissions: ");// e.getMessage());
+            return;
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        }
+    }
+
 
     //选择相册
     private void selectAlbum() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_ALBUM);
+        startActivityForResult(intent, GALLERY_ACTIVITY_CODE);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_INFO:
-                if (resultCode == 200) {
-                    //刷新数据
-                    showUserInfo();
-                }
-                break;
-            case REQUEST_CAMERA://相机
-
-                break;
-
-            case REQUEST_CROP://裁剪照片
-
-                break;
-            case REQUEST_ALBUM://相册
-
-                break;
-        }
-    }
     //裁剪照片
     private void cropImage(Uri uri) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, IMAGE_UNSPECIFIED);
-        intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageFile);
-        startActivityForResult(intent, REQUEST_CROP);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case CAMERA_PERMISSION_CODE:
-                selectCamera();
-                //ToastUtils.showImageToast(MyInfoActivity.this, "权限申请OK！");
-                break;
+        try {
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                grantUriPermission("com.android.camera", uri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+            intent.setDataAndType(uri, "image/*");
+            intent.putExtra("crop", "true");
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
+            intent.putExtra("outputX", 300);
+            intent.putExtra("outputY", 300);
+            intent.putExtra("return-data", true);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, getOutputMediaFile().toString());
+            startActivityForResult(intent, RESULT_CROP);
+        } catch (ActivityNotFoundException anfe) {
+            String errorMessage = "你的设备不支持裁剪行为！";
+            Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("resultCode"+resultCode);
+        if (resultCode == RESULT_OK) {
+
+            switch (requestCode) {
+                case REQUEST_INFO:
+                    if (resultCode == 200) {
+                        //刷新数据
+                        showUserInfo();
+                        Toast.makeText(this, "200执行了", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case REQUEST_CAPTURE:
+                    if (null != imageUri) {
+                        localUri = imageUri;
+                        cropImage(localUri);
+                    }
+                    break;
+                case REQUEST_PICTURE:
+                    localUri = data.getData();
+                    cropImage(localUri);
+                    break;
+                case RESULT_CROP:
+                    Bundle extras = data.getExtras();
+                    Bitmap selectedBitmap = extras.getParcelable("data");
+                    //判断返回值extras是否为空，为空则说明用户截图没有保存就返回了，此时应该用上一张图，
+                    //否则就用用户保存的图
+                    if (extras == null) {
+                        // iv_user_head.setImageBitmap(mBitmap);
+                        // storeImage(mBitmap);
+                    } else {
+                        iv_user_head.setImageBitmap(selectedBitmap);
+                        storeImage(selectedBitmap);
+                    }
+                    break;
+                case GALLERY_ACTIVITY_CODE:
+
+                    localUri = data.getData();
+                    //  setBitmap(localUri);
+                    cropImage(localUri);
+                    break;
+            }
+        }
+    }
+
 }
