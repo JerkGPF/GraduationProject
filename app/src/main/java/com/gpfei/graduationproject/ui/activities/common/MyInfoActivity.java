@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobUser;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MyInfoActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView iv_back;
@@ -68,23 +70,23 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
 
     //初始化
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
-        tv_username = (TextView) findViewById(R.id.tv_username);
-        tv_nick = (TextView) findViewById(R.id.tv_nick);
-        tv_motto = (TextView) findViewById(R.id.tv_motto);
+        iv_back = findViewById(R.id.iv_back);
+        tv_title = findViewById(R.id.tv_title);
+        tv_username = findViewById(R.id.tv_username);
+        tv_nick = findViewById(R.id.tv_nick);
+        tv_motto = findViewById(R.id.tv_motto);
         tv_title.setText("我的资料");
-        iv_user_head = (ImageView) findViewById(R.id.iv_user_head);
+        iv_user_head = findViewById(R.id.iv_user_head);
         iv_back.setOnClickListener(this);
-        rl_modify_user_head = (RelativeLayout) findViewById(R.id.rl_modify_user_head);
+        rl_modify_user_head = findViewById(R.id.rl_modify_user_head);
         rl_modify_user_head.setOnClickListener(this);
-        rl_modify_user_nick = (RelativeLayout) findViewById(R.id.rl_modify_user_nick);
+        rl_modify_user_nick = findViewById(R.id.rl_modify_user_nick);
         rl_modify_user_nick.setOnClickListener(this);
-        rl_modify_user_motto = (RelativeLayout) findViewById(R.id.rl_modify_user_motto);
+        rl_modify_user_motto =  findViewById(R.id.rl_modify_user_motto);
         rl_modify_user_motto.setOnClickListener(this);
-        rl_to_mydata = (RelativeLayout) findViewById(R.id.rl_to_mydata);
+        rl_to_mydata =  findViewById(R.id.rl_to_mydata);
         rl_to_mydata.setOnClickListener(this);
-        rl_id = (RelativeLayout) findViewById(R.id.rl_id);
+        rl_id = findViewById(R.id.rl_id);
         rl_id.setOnClickListener(this);
         //显示用户信息
         showUserInfo();
@@ -127,6 +129,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 finish();
                 break;
             case R.id.rl_modify_user_head:
+                methodRequiresTwoPermission();//调用权限
                 List<String> stringList = new ArrayList<String>();
                 stringList.add("拍照");
                 stringList.add("从相册选择");
@@ -174,6 +177,18 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         }
 
     }
+    @AfterPermissionGranted(1)//添加注解，是为了首次执行权限申请后，回调该方法
+    private void methodRequiresTwoPermission() {
+        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            //已经申请过权限，直接调用相机
+            // openCamera();
+        } else {
+            EasyPermissions.requestPermissions(this, "需要获取权限",
+                    1, perms);
+        }
+    }
+
     //选择相机
     private void selectCamera() {
         mImageFile = new File(Environment.getExternalStorageDirectory(), System.currentTimeMillis() + ".jpg");
@@ -205,19 +220,18 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     showUserInfo();
                 }
                 break;
-            case REQUEST_CAMERA:
+            case REQUEST_CAMERA://相机
 
                 break;
 
-            case REQUEST_CROP:
+            case REQUEST_CROP://裁剪照片
 
                 break;
-            case REQUEST_ALBUM:
+            case REQUEST_ALBUM://相册
 
                 break;
         }
     }
-
     //裁剪照片
     private void cropImage(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");

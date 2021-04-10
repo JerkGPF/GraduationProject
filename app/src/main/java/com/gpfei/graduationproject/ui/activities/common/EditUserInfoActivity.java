@@ -125,7 +125,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
         DatePickerDialog datePickerDialog = new DatePickerDialog(EditUserInfoActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                tv_show_birthday.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+                tv_show_birthday.setText(year + "-" + (monthOfYear+1) + "-" + dayOfMonth);
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
