@@ -7,14 +7,21 @@ import androidx.fragment.app.FragmentTransaction;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.gpfei.graduationproject.R;
+import com.gpfei.graduationproject.beans.SignInBean;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.fragments.common.FindFragment;
 import com.gpfei.graduationproject.ui.fragments.common.HomeFragment;
 import com.gpfei.graduationproject.ui.fragments.common.MessageFragment;
 import com.gpfei.graduationproject.ui.fragments.common.UserFragment;
+
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -67,7 +74,10 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         rg_bottom_bar.setOnCheckedChangeListener(this);
         rb1.setChecked(true);
 
+
     }
+
+
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {

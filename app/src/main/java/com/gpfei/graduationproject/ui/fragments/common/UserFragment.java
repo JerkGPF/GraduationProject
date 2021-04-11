@@ -1,5 +1,6 @@
 package com.gpfei.graduationproject.ui.fragments.common;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -9,18 +10,27 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.beans.SelectAndResume;
+import com.gpfei.graduationproject.beans.SignInBean;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.common.AboutActivity;
 import com.gpfei.graduationproject.ui.activities.common.FeedBackActivity;
 import com.gpfei.graduationproject.ui.activities.common.HelpActivity;
@@ -31,11 +41,19 @@ import com.gpfei.graduationproject.ui.activities.common.MyDataActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyInfoActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyIntegralActivity;
 import com.gpfei.graduationproject.ui.activities.common.SettingActivity;
-import com.gpfei.graduationproject.ui.activities.common.SignInActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
+import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +76,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private TextView tv_motto;
     private RelativeLayout rl_user;
     private LinearLayout ll_class;
-    private static  final int INFO_CODE=1;
+    private static final int INFO_CODE = 1;
+
+    int intergal;
+    String objectId;
+    String updatedAt;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,11 +93,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-
-    //定义一个回调接口
-    public interface CallBackValue{
-        public void SendMessageValue(String strValue);
-    }
 
     private void initView(View view) {
         rl_menu_item1 = (RelativeLayout) view.findViewById(R.id.rl_menu_item1);
@@ -129,9 +148,35 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             //显示等级
             ll_class.setVisibility(View.VISIBLE);
         }
+
+        queryIntegral();
     }
 
+    //查询出积分
+    private void queryIntegral() {
+        BmobQuery<SignInBean> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", BmobUser.getCurrentUser(User.class));
+        query.order("-updatedAt");
+        //包含作者信息
+        query.include("intergal");
+        query.findObjects(new FindListener<SignInBean>() {
+            @Override
+            public void done(List<SignInBean> object, BmobException e) {
+                if (e == null) {
+                    Log.d("object.size()", object.size() + "");
+                    Log.d("object.size()", object.get(0).getIntergal() + "");
+                    intergal = object.get(0).getIntergal();
+                    objectId = object.get(0).getObjectId();
+                    updatedAt = object.get(0).getUpdatedAt();
+                    updatedAt = updatedAt.substring(0,updatedAt.indexOf(" "));
+                    Log.d("updatedAt:",updatedAt+"");
+                } else {
+                    Log.e("BMOB", e.toString());
+                }
+            }
 
+        });
+    }
 
     @Override
     public void onClick(View v) {
@@ -170,9 +215,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     ToastUtils.showTextToast(getContext(), "请先登录!");
                 }
                 break;
-            case R.id.ll_menu4:
+            case R.id.ll_menu4://签到
                 if (bmobUser != null) {
-                    startActivity(new Intent(getContext(), SignInActivity.class));
+                    updateIntergal();
+                    //startActivity(new Intent(getContext(), SignInActivity.class));
                 } else {
                     startActivity(new Intent(getContext(), LoginAndRegisterActivity.class));
                     ToastUtils.showTextToast(getContext(), "请先登录!");
@@ -214,11 +260,78 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
 
     }
+    //更新签到信息
+    private void updateIntergal() {
+        //添加当前时间
+        Date now = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+        String createTime = dateFormat.format(now);//格式化然后放入字符串中
+        System.out.println(createTime);
+        System.out.println(updatedAt.equals(createTime));
+        if (updatedAt.equals(createTime)&&intergal!=0){
+            ToastUtils.showImageToast(getActivity(),"已经签到过了！");
+        }
+        if (updatedAt.equals(createTime)&&intergal == 0){
+            intergal +=2;
+            SignInBean signInBean = new SignInBean();
+            signInBean.setIntergal(intergal);
+            signInBean.update(objectId, new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null){
+                        signIn();
+                    }else {
+                        ToastUtils.showTextToast(getActivity(),"签到失败了"+e.getMessage());
+                    }
+                }
+            });
+        }
+        if (!updatedAt.equals(createTime)&& intergal != 0){
+            intergal +=2;
+            SignInBean signInBean = new SignInBean();
+            signInBean.setIntergal(intergal);
+            signInBean.update(objectId, new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null){
+                        signIn();
+                    }else {
+                        ToastUtils.showTextToast(getActivity(),"签到失败了"+e.getMessage());
+                    }
+                }
+            });
+        }
+    }
+
+    private void signIn() {
+        final Dialog dialog = new Dialog(UserFragment.this.getContext());
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
+        View contentView = LayoutInflater.from(UserFragment.this.getContext()).inflate(R.layout.dialog_sign, null);
+        dialog.setContentView(contentView);
+        Button cancel = contentView.findViewById(R.id.submit_bt);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        //背景透明
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.show();
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.gravity = Gravity.CENTER;
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
+        window.setWindowAnimations(R.style.mystyle);  //添加动画
+        dialog.setCanceledOnTouchOutside(true);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==INFO_CODE){
+        if (requestCode == INFO_CODE) {
             //刷新用户信息
             MyUser user = BmobUser.getCurrentUser(MyUser.class);
             //获取用户名
