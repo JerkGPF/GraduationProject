@@ -55,6 +55,7 @@
             android:layout_marginTop="20dp"
             android:drawableLeft="@drawable/icon_lock"
             android:background="@drawable/bg_et"
+            android:inputType="textPassword"
             android:hint="再次输入密码"
             android:drawablePadding="10dp"
             android:paddingLeft="10dp"

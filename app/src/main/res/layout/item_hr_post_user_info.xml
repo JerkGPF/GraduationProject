@@ -24,10 +24,10 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"/>
             <TextView
-                android:id="@+id/tv_count_d"
+                android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="102人看过"
+                android:text="姓名"
                 android:textSize="12sp"
                 android:layout_alignParentRight="true"/>
         </RelativeLayout>
@@ -63,10 +63,10 @@
                     android:text="月"/>
             </LinearLayout>
             <TextView
-                android:id="@+id/tv_delivery_day"
+                android:id="@+id/tv_sex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="投递"
+                android:text="性别"
                 android:background="@color/colorAccent"
                 android:textColor="@color/white"
                 android:textSize="12sp"
@@ -122,10 +122,10 @@
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
             <TextView
-                android:id="@+id/tv_time_day"
+                android:id="@+id/tv_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="一小时前"
+                android:text="联系方式"
                 android:textSize="12sp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"/>

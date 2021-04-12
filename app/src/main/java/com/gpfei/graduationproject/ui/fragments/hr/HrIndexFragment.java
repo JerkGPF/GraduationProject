@@ -1,9 +1,14 @@
 package com.gpfei.graduationproject.ui.fragments.hr;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +17,31 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.gpfei.graduationproject.R;
+import com.gpfei.graduationproject.adapters.DayAdapter;
+import com.gpfei.graduationproject.adapters.HRIndexAdapter;
 import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.HrUser;
+import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
+import com.gpfei.graduationproject.ui.activities.common.MyDataActivity;
+import com.gpfei.graduationproject.ui.activities.hr.HrCheckUserInfoActivity;
+import com.gpfei.graduationproject.ui.activities.hr.PublishActivity;
+import com.gpfei.graduationproject.utils.DividerItemDecoration;
+import com.gpfei.graduationproject.utils.SmileToast;
+import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
+import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -26,67 +50,99 @@ import cn.bmob.v3.listener.SaveListener;
  * create an instance of this fragment.
  */
 public class HrIndexFragment extends Fragment implements View.OnClickListener {
-    private EditText et_hr_company_job;
-    private EditText et_hr_company_salary;
-    private EditText et_hr_company_name;
-    private EditText et_hr_company_place;
-    private EditText et_hr_company_url;
-    private Button btn;
 
+    private RecyclerView recyclerView;
+    private FloatingActionButton fab;
+    private List<MyUser> datalist = new ArrayList<>();
+    private PullToRefreshLayout refresh;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_hr_index, container, false);
         initView(view);
+        equal();
         return view;
     }
 
     private void initView(View view) {
-        et_hr_company_job = view.findViewById(R.id.et_hr_company_job);
-        et_hr_company_salary = view.findViewById(R.id.et_hr_company_salary);
-        et_hr_company_name = view.findViewById(R.id.et_hr_company_name);
-        et_hr_company_place = view.findViewById(R.id.et_hr_company_place);
-        et_hr_company_url = view.findViewById(R.id.et_hr_company_url);
-        btn = view.findViewById(R.id.submit);
-        btn.setOnClickListener(this);
-    }
+        recyclerView = view.findViewById(R.id.rRecyclerview);
+        refresh = view.findViewById(R.id.refresh);
+        refresh.setRefreshListener(new BaseRefreshListener() {
+            @Override
+            public void refresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        equal();
+                        //结束刷新
+                        refresh.finishRefresh();
+                    }
+                }, 2000);
+            }
 
+            @Override
+            public void loadMore() {
+                SmileToast smileToast = new SmileToast();
+                smileToast.smile("加载完成");
+                refresh.finishLoadMore();
+            }
+        });
+        fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.submit:
-                saveJob();
+            case R.id.fab:
+                Intent intent = new Intent(getActivity(), PublishActivity.class);
+                startActivity(intent);
                 break;
         }
     }
 
     /**
-     * 添加一对一关联，当前用户发布职位
+     * isHR为User进行HR的判断
      */
-    private void saveJob() {
-        if (BmobUser.isLogin()){
-            DayBean dayBean = new DayBean();
-            dayBean.setTitle_day(et_hr_company_job.getText().toString().trim());
-            dayBean.setCompany_day(et_hr_company_name.getText().toString().trim());
-            dayBean.setAddress_day(et_hr_company_place.getText().toString().trim());
-            dayBean.setMoney_day(et_hr_company_salary.getText().toString().trim());
-            dayBean.setUrl(et_hr_company_url.getText().toString().trim());
-            //添加一对一关联，用户关联发表职位
-            dayBean.setAuthor(BmobUser.getCurrentUser(HrUser.class));
-            dayBean.save(new SaveListener<String>() {
-                @Override
-                public void done(String s, BmobException e) {
-                    if (e == null) {
-                        Toast.makeText(getActivity(), "职位发布成功", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.e("BMOB", e.toString());
-                        Toast.makeText(getActivity(), "出现问题"+e.getMessage(), Toast.LENGTH_SHORT).show();
+    private void equal() {
+        BmobQuery<MyUser> myUserBmobQuery = new BmobQuery<>();
+        myUserBmobQuery.addWhereEqualTo("isHR", false);
+        myUserBmobQuery.findObjects(new FindListener<MyUser>() {
+            @Override
+            public void done(final List<MyUser> object, BmobException e) {
+                if (e == null) {
+                    //添加前清除集合数据先，防止数据添加重复
+                    datalist.clear();
+                    datalist.addAll(object);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    HRIndexAdapter adapter = new HRIndexAdapter(getContext(), datalist);
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    //添加分割线
+                    recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
+                    recyclerView.setAdapter(adapter);
+                    adapter.setOnItemClickLitener(new HRIndexAdapter.OnItemClickLitener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            //点击事件
+                            Intent intent = new Intent(getContext(), HrCheckUserInfoActivity.class);
+                            intent.putExtra("objectId", datalist.get(position).getObjectId());
+                            Log.d("objectId>>>>>>>>>>>>>>>",datalist.get(position).getObjectId());
+                            startActivity(intent);
+                        }
+                        @Override
+                        public void onItemLongClick(View view, int position) {
+
+                        }
+                    });
+                    for (MyUser user:object){
+                        Log.d("object>>>>>",user.getUsername());
                     }
+                } else {
+                    Log.e("BMOB", e.toString());
+                    Toast.makeText(getActivity(), "错误"+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            });
-        }else {
-            Toast.makeText(getActivity(), "请先登录", Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
     }
+
 }

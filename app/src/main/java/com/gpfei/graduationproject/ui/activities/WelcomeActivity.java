@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.ui.activities.common.MainActivity;
+import com.gpfei.graduationproject.ui.activities.hr.HrMainActivity;
 
 import cn.bmob.v3.Bmob;
 
@@ -31,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, HrMainActivity.class);
                 startActivity(intent);
                 finish();
             }

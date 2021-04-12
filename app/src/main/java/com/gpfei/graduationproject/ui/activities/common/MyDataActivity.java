@@ -44,13 +44,13 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
+        iv_back = findViewById(R.id.iv_back);
+        tv_title = findViewById(R.id.tv_title);
         tv_title.setText("基本资料");
-        tv_to_edit = (TextView) findViewById(R.id.tv_to_edit);
+        tv_to_edit = findViewById(R.id.tv_to_edit);
         iv_back.setOnClickListener(this);
         tv_to_edit.setOnClickListener(this);
-        iv_user_head = (ImageView) findViewById(R.id.iv_user_head);
+        iv_user_head = findViewById(R.id.iv_user_head);
         iv_user_head.setOnClickListener(this);
 
         tv_phone = findViewById(R.id.tv_phone);
@@ -95,7 +95,6 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
     //显示用户资料
     private void showUserInfo() {
         MyUser user = BmobUser.getCurrentUser(MyUser.class);
-
         if (user != null) {
             //获取头像地址
             if (user.getHead() != null) {
@@ -109,16 +108,6 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 });
             }
-            //插入进行更新
-//            user.setValue("birthday","2020-10-20");
-//            user.setValue("experience","回家环境开会艰苦环境艰苦环境开会");
-//            user.update(user.getObjectId(), new UpdateListener() {
-//                @Override
-//                public void done(BmobException e) {
-//                    ToastUtils.showImageToast(MyDataActivity.this,"个性签名更新成功！");
-//                }
-//            });
-
         }
         BmobQuery<MyUser> query = new BmobQuery<>();
         query.findObjects(new FindListener<MyUser>() {
@@ -141,7 +130,6 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
                             tv_sex.setText("女");
                         }
                     }
-
                     tv_experience.setText(user.getExperience());
                     tv_birth.setText(user.getBirthday());
                 }

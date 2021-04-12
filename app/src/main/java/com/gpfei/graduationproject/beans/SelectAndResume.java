@@ -8,6 +8,8 @@ public class SelectAndResume extends BmobObject {
     private User user;
     private Boolean delivery;
     private Boolean collect;
+    private MyUser myUser;
+    private PostAndUser postAndUser;
 
     public Boolean getDelivery() {
         return delivery;
@@ -49,5 +51,21 @@ public class SelectAndResume extends BmobObject {
                 ", delivery=" + delivery +
                 ", collect=" + collect +
                 '}';
+    }
+
+    public MyUser getMyUser() {
+        return myUser;
+    }
+
+    public void setMyUser(MyUser myUser) {
+        this.myUser = myUser;
+    }
+
+    public PostAndUser getPostAndUser() {
+        return postAndUser;
+    }
+
+    public void setPostAndUser(PostAndUser postAndUser) {
+        this.postAndUser = postAndUser;
     }
 }

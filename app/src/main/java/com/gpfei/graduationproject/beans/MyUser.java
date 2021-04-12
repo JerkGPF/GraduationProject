@@ -16,6 +16,7 @@ public class MyUser extends BmobUser {
     private String experience;
     private String name;
     private String birthday;
+    private Boolean isHR;
 
     public String getBirthday() {
         return birthday;
@@ -103,5 +104,13 @@ public class MyUser extends BmobUser {
 
     public void setExperience(String experience) {
         this.experience = experience;
+    }
+
+    public Boolean getHR() {
+        return isHR;
+    }
+
+    public void setHR(Boolean HR) {
+        isHR = HR;
     }
 }

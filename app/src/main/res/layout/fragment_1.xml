@@ -3,11 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.fragments.common.home.Fragment1">
-
     <!-- TODO: Update blank fragment layout -->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rRecyclerview"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:scrollbars="none"
         android:layout_height="wrap_content">
     </androidx.recyclerview.widget.RecyclerView>
-
     <RelativeLayout
         android:id="@+id/rl_load_view1"
         android:layout_width="match_parent"
@@ -64,4 +62,5 @@
                 />
         </LinearLayout>
     </RelativeLayout>
+
 </LinearLayout>

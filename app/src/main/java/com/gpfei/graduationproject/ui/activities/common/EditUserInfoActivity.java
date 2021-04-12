@@ -102,6 +102,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                                     user.setEmail(et_edit_email.getText().toString());
                                     user.setExperience(et_exper.getText().toString());
                                     user.setProfile(et_introduce.getText().toString());
+                                    user.setHR(false);
                                     if (rb_sex_male.isChecked()) {
                                         user.setSex(true);
                                     } else if (rb_sex_female.isChecked()) {

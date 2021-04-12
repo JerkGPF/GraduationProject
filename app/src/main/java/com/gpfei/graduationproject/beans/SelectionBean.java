@@ -10,6 +10,7 @@ public class SelectionBean extends BmobObject {
     private String money_selection;
     private String company_selection;
     private int sCount;
+    private HrUser author;
 
     public int getsCount() {
         return sCount;
@@ -59,4 +60,11 @@ public class SelectionBean extends BmobObject {
         this.company_selection = company_selection;
     }
 
+    public HrUser getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(HrUser author) {
+        this.author = author;
+    }
 }
