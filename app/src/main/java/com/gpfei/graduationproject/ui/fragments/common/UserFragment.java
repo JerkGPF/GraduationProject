@@ -95,32 +95,32 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
 
     private void initView(View view) {
-        rl_menu_item1 = (RelativeLayout) view.findViewById(R.id.rl_menu_item1);
+        rl_menu_item1 =  view.findViewById(R.id.rl_menu_item1);
         rl_menu_item1.setOnClickListener(this);
-        rl_menu_item2 = (RelativeLayout) view.findViewById(R.id.rl_menu_item2);
+        rl_menu_item2 =  view.findViewById(R.id.rl_menu_item2);
         rl_menu_item2.setOnClickListener(this);
-        rl_menu_item3 = (RelativeLayout) view.findViewById(R.id.rl_menu_item3);
+        rl_menu_item3 =  view.findViewById(R.id.rl_menu_item3);
         rl_menu_item3.setOnClickListener(this);
-        rl_menu_item4 = (RelativeLayout) view.findViewById(R.id.rl_menu_item4);
+        rl_menu_item4 =  view.findViewById(R.id.rl_menu_item4);
         rl_menu_item4.setOnClickListener(this);
-        rl_menu_item5 = (RelativeLayout) view.findViewById(R.id.rl_menu_item5);
+        rl_menu_item5 =  view.findViewById(R.id.rl_menu_item5);
         rl_menu_item5.setOnClickListener(this);
-        rl_menu_item6 = (RelativeLayout) view.findViewById(R.id.rl_menu_item6);
+        rl_menu_item6 =  view.findViewById(R.id.rl_menu_item6);
         rl_menu_item6.setOnClickListener(this);
-        ll_menu1 = (LinearLayout) view.findViewById(R.id.ll_menu1);
+        ll_menu1 =  view.findViewById(R.id.ll_menu1);
         ll_menu1.setOnClickListener(this);
-        ll_menu2 = (LinearLayout) view.findViewById(R.id.ll_menu2);
+        ll_menu2 =  view.findViewById(R.id.ll_menu2);
         ll_menu2.setOnClickListener(this);
-        ll_menu3 = (LinearLayout) view.findViewById(R.id.ll_menu3);
+        ll_menu3 =  view.findViewById(R.id.ll_menu3);
         ll_menu3.setOnClickListener(this);
-        ll_menu4 = (LinearLayout) view.findViewById(R.id.ll_menu4);
+        ll_menu4 =  view.findViewById(R.id.ll_menu4);
         ll_menu4.setOnClickListener(this);
-        tv_username = (TextView) view.findViewById(R.id.tv_username);
-        iv_user_head = (ImageView) view.findViewById(R.id.iv_user_head);
-        tv_motto = (TextView) view.findViewById(R.id.tv_motto_user);
-        rl_user = (RelativeLayout) view.findViewById(R.id.rl_user);
+        tv_username =  view.findViewById(R.id.tv_username);
+        iv_user_head =  view.findViewById(R.id.iv_user_head);
+        tv_motto =  view.findViewById(R.id.tv_motto_user);
+        rl_user =  view.findViewById(R.id.rl_user);
         rl_user.setOnClickListener(this);
-        ll_class = (LinearLayout) view.findViewById(R.id.ll_class);
+        ll_class = view.findViewById(R.id.ll_class);
 
         MyUser user = BmobUser.getCurrentUser(MyUser.class);
         if (user != null) {

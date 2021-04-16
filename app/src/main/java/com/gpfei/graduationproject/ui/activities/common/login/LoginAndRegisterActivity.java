@@ -39,10 +39,10 @@ public class LoginAndRegisterActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        rb_login = (RadioButton) findViewById(R.id.rb_login);
-        rb_register = (RadioButton) findViewById(R.id.rb_register);
-        rg_login_register = (RadioGroup) findViewById(R.id.rg_login_register);
-        frame_content = (FrameLayout) findViewById(R.id.frame_content);
+        rb_login =  findViewById(R.id.rb_login);
+        rb_register =  findViewById(R.id.rb_register);
+        rg_login_register =  findViewById(R.id.rg_login_register);
+        frame_content =  findViewById(R.id.frame_content);
         loginFragment = new LoginFragment();
         //默认添加第一项
         fm = getSupportFragmentManager();

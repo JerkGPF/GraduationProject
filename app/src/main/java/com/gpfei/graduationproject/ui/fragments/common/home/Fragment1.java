@@ -90,6 +90,7 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                             //点击事件
                             Intent intent = new Intent(getContext(), JobWebDetailsActivity.class);
                             intent.putExtra("url", datalist.get(position).getUrl());
+                            //intent.putExtra("objectId", datalist.get(position).getObjectId());
                             startActivity(intent);
                         }
 

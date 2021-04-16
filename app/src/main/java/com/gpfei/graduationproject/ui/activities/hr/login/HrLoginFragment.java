@@ -79,7 +79,7 @@ public class HrLoginFragment extends Fragment implements View.OnClickListener {
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             } else {
-                                ToastUtils.showTextToast(getContext(), "账号或密码错误！");
+                                ToastUtils.showTextToast(getContext(), "登录超时！请重试");
                             }
                         }
                     });

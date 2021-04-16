@@ -57,7 +57,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.btn_register:
-
                 if (et_phone.getText().toString().isEmpty()) {
                     ToastUtils.showImageToast(getContext(), "账号不能为空哟~");
                 }else if (et_phone.getText().toString().length()<6) {

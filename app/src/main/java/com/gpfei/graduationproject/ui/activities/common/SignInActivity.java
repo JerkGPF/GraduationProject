@@ -24,8 +24,8 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
+        iv_back =  findViewById(R.id.iv_back);
+        tv_title = findViewById(R.id.tv_title);
         tv_title.setText("签到");
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,7 +33,7 @@ public class SignInActivity extends AppCompatActivity {
                 finish();
             }
         });
-        iv_signing = (ImageView) findViewById(R.id.iv_signing);
+        iv_signing = findViewById(R.id.iv_signing);
         iv_signing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

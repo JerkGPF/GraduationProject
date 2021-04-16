@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context=".ui.activities.common.JobWebDetailsActivity">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -88,10 +87,12 @@
                 android:orientation="horizontal"
                 android:gravity="center">
                 <ImageView
+                    android:id="@+id/iv_collect"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@mipmap/icon_collect"/>
                 <TextView
+                    android:id="@+id/tv_collect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
@@ -102,12 +103,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:text="已结束"
+                android:text="进行中。。。"
                 android:textColor="@color/white"
                 android:gravity="center"
                 android:textSize="16sp"
-                android:background="@color/gray_cc"/>
-
+                android:background="#FFA500"/>
         </LinearLayout>
     </RelativeLayout>
 

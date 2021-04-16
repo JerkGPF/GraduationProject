@@ -9,6 +9,27 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 允许读取手机状态 用于创建BmobInstallation -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <!-- IM SDK required start -->
+    <!-- 允许程序振动 -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 麦克风权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- 相机权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 这个权限用于访问GPS定位(用于定位消息，如果不用定位相关可以移除) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- api 21后被标记为deprecated -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!-- 用于获取wifi的获取权限 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!-- 允许程序修改声音设置信息 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- 允许程序开机自动运行 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 捕获屏幕所需权限，Q后新增权限(多人音视频屏幕分享使用) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!-- IM SDK required end -->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -72,6 +93,9 @@
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="com.gpfei.graduationproject.BmobContentProvider" />
+
+
+
     </application>
 
 </manifest>
