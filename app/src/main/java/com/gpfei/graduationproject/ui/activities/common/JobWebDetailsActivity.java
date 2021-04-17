@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -16,8 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gpfei.graduationproject.R;
+import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.beans.SelectAndResume;
+import com.gpfei.graduationproject.message.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
 import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
@@ -116,7 +119,23 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
             public void onClick(View v) {
                 BmobUser bmobUser = BmobUser.getCurrentUser(MyUser.class);
                 if (bmobUser != null) {
-                    ToastUtils.showImageToast(JobWebDetailsActivity.this, "收藏成功！");
+                    BmobQuery<DayBean> bmobQuery = new BmobQuery<DayBean>();
+                    bmobQuery.getObject(objectId, new QueryListener<DayBean>() {
+                        @Override
+                        public void done(DayBean object,BmobException e) {
+                            if(e==null){
+                                String authorid = object.getAuthor().getObjectId();//获取发布者的id；
+                                String userid = bmobUser.getObjectId();
+                                Intent intent = new Intent(JobWebDetailsActivity.this, MessageActivity.class);
+                                intent.putExtra("authorid", authorid);
+                                intent.putExtra("userid", userid);
+                                startActivity(intent);
+
+                            }else{
+                                Toast.makeText(JobWebDetailsActivity.this, "查找失败", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 } else {
                     ToastUtils.showTextToast(JobWebDetailsActivity.this, "请先登录!");
                     startActivity(new Intent(JobWebDetailsActivity.this, LoginAndRegisterActivity.class));

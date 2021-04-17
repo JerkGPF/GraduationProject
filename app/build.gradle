@@ -6,6 +6,11 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+
+    sourceSets {
+        main.jniLibs.srcDirs = ['libs']
+    }
+
     defaultConfig {
         applicationId "com.gpfei.graduationproject"
         minSdkVersion 16
@@ -26,11 +31,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-//    repositories {
-//        flatDir {
-//            dirs 'libs'
-//        }
-//    }    // 此在android标签下添加
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }    // 此在android标签下添加
+
 }
 
 dependencies {
@@ -42,7 +48,8 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-
+    //TODO 集成：1.2、配置IM SDK（bmob-im）版本和Data SDK（bmob-sdk）版本：特定版本的bmob-im依赖特定版本的bmob-sdk
+    implementation 'cn.bmob.android:bmob-im:2.1.5@aar'
 
     //bmob后端云依赖
     implementation 'cn.bmob.android:bmob-sdk:3.7.8'
@@ -60,9 +67,9 @@ dependencies {
     implementation 'com.jwenfeng.pulltorefresh:library:1.0.3'//下拉刷新
     implementation 'pub.devrel:easypermissions:0.4.3'//权限请求
 
+    implementation 'com.orhanobut:logger:1.4'
 
-    //TODO 集成：1.2、配置IM SDK（bmob-im）版本和Data SDK（bmob-sdk）版本：特定版本的bmob-im依赖特定版本的bmob-sdk
-    //implementation 'cn.bmob.android:bmob-im:2.1.5@aar'
+    implementation 'org.greenrobot:eventbus:3.0.0'
 
 
 

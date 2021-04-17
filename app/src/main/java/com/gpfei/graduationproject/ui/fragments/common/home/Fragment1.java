@@ -75,6 +75,7 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                     datalist.clear();
                     //添加数据到集合
                     datalist.addAll(list);
+                    //设置垂直显示
                     rRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
                     DayAdapter adapter = new DayAdapter(getContext(), datalist,"全职");
                     rRecyclerview.setItemAnimator(new DefaultItemAnimator());
@@ -90,7 +91,7 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                             //点击事件
                             Intent intent = new Intent(getContext(), JobWebDetailsActivity.class);
                             intent.putExtra("url", datalist.get(position).getUrl());
-                            //intent.putExtra("objectId", datalist.get(position).getObjectId());
+                            intent.putExtra("objectId", datalist.get(position).getObjectId());
                             startActivity(intent);
                         }
 

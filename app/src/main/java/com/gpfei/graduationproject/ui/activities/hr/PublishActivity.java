@@ -2,6 +2,7 @@ package com.gpfei.graduationproject.ui.activities.hr;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,13 +17,22 @@ import android.widget.Toast;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.HrUser;
+import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.beans.SelectionBean;
 import com.gpfei.graduationproject.beans.WeekendBean;
+import com.gpfei.graduationproject.ui.activities.common.EditUserInfoActivity;
+import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
+import com.gpfei.graduationproject.ui.fragments.hr.HrIndexFragment;
 import com.gpfei.graduationproject.utils.SmileToast;
+import com.gpfei.graduationproject.utils.ToastUtils;
+
+import java.text.DecimalFormat;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.http.I;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class PublishActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView iv_back;
@@ -104,8 +114,21 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.submit:
                 if (isEmpty()){
                     if (cb_part.isChecked()){
-                        savePartJob();
-                        Log.d("兼职", "onClick:兼职 ");
+                        // 耗时操作要在子线程中操作
+                        new Thread() {
+                            public void run() {
+                                //执行耗时操作
+                                savePartJob();
+                                //更新主线程UI
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                        Log.d("兼职", "onClick:兼职 ");
+                                    }
+                                });
+                            }
+                        }.start();
                     }
                     if (cb_full.isChecked()){
                         saveFullJob();
@@ -128,12 +151,16 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
      * 全职
      */
     private void saveFullJob() {
+        String salary = et_hr_company_salary.getText().toString().trim();
+        Double temp = Double.parseDouble(salary)/1000;
+        DecimalFormat df = new DecimalFormat("0.0");
+        salary = df.format(temp);
         if (BmobUser.isLogin()) {
             DayBean dayBean = new DayBean();
             dayBean.setTitle_day(et_hr_company_job.getText().toString().trim());
             dayBean.setCompany_day(et_hr_company_name.getText().toString().trim());
             dayBean.setAddress_day(et_hr_company_place.getText().toString().trim());
-            dayBean.setMoney_day(et_hr_company_salary.getText().toString().trim());
+            dayBean.setMoney_day(salary+"K");
             dayBean.setUrl(et_hr_company_url.getText().toString().trim());
             //添加一对一关联，用户关联发表职位
             dayBean.setAuthor(BmobUser.getCurrentUser(HrUser.class));
@@ -143,6 +170,7 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
                     if (e == null) {
                         SmileToast smileToast = new SmileToast();
                         smileToast.smile("职位发布成功");
+                        finish();
                     } else {
                         Log.e("BMOB", e.toString());
                         Toast.makeText(PublishActivity.this, "出现问题" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -156,12 +184,16 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
 
     //兼职
     private void savePartJob() {
+        String salary = et_hr_company_salary.getText().toString().trim();
+        Double temp = Double.parseDouble(salary)/1000;
+        DecimalFormat df = new DecimalFormat("0.0");
+        salary = df.format(temp);
         if (BmobUser.isLogin()) {
             WeekendBean weekendBean = new WeekendBean();
             weekendBean.setTitle_weekend(et_hr_company_job.getText().toString().trim());
             weekendBean.setCompany_weekend(et_hr_company_name.getText().toString().trim());
             weekendBean.setAddress_weekend(et_hr_company_place.getText().toString().trim());
-            weekendBean.setMoney_weekend(et_hr_company_salary.getText().toString().trim());
+            weekendBean.setMoney_weekend(salary+"K");
             weekendBean.setUrl(et_hr_company_url.getText().toString().trim());
             //添加一对一关联，用户关联发表职位
             weekendBean.setAuthor(BmobUser.getCurrentUser(HrUser.class));
@@ -171,6 +203,7 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
                     if (e == null) {
                         SmileToast smileToast = new SmileToast();
                         smileToast.smile("职位发布成功");
+                        finish();
                     } else {
                         Log.e("BMOB", e.toString());
                         Toast.makeText(PublishActivity.this, "出现问题" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -183,12 +216,15 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
     }
     //实习
     private void savePraticeJob() {
-        if (BmobUser.isLogin()) {
+        String salary = et_hr_company_salary.getText().toString().trim();
+        Double temp = Double.parseDouble(salary)/1000;
+        DecimalFormat df = new DecimalFormat("0.0");
+        salary = df.format(temp);        if (BmobUser.isLogin()) {
             SelectionBean selectionBean = new SelectionBean();
             selectionBean.setTitle_selection(et_hr_company_job.getText().toString().trim());
             selectionBean.setCompany_selection(et_hr_company_name.getText().toString().trim());
             selectionBean.setAddress_selection(et_hr_company_place.getText().toString().trim());
-            selectionBean.setMoney_selection(et_hr_company_salary.getText().toString().trim());
+            selectionBean.setMoney_selection(salary+"K");
             selectionBean.setUrl_selection(et_hr_company_url.getText().toString().trim());
             //添加一对一关联，用户关联发表职位
             selectionBean.setAuthor(BmobUser.getCurrentUser(HrUser.class));
@@ -198,6 +234,7 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
                     if (e == null) {
                         SmileToast smileToast = new SmileToast();
                         smileToast.smile("职位发布成功");
+                        finish();
                     } else {
                         Log.e("BMOB", e.toString());
                         Toast.makeText(PublishActivity.this, "出现问题" + e.getMessage(), Toast.LENGTH_SHORT).show();

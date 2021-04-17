@@ -114,6 +114,7 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void done(List<MyUser> list, BmobException e) {
                 if (e==null){
+                    //成功操作
                     tv_name.setText(user.getName());
                     tv_phone.setText(user.getMobilePhoneNumber());
                     tv_email.setText(user.getEmail());
@@ -132,6 +133,8 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
                     }
                     tv_experience.setText(user.getExperience());
                     tv_birth.setText(user.getBirthday());
+                }else {
+                    //失败操作
                 }
 
             }

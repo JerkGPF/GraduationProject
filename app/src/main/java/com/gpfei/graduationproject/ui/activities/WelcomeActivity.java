@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.gpfei.graduationproject.R;
+import com.gpfei.graduationproject.message.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.MainActivity;
 import com.gpfei.graduationproject.ui.activities.hr.HrMainActivity;
 

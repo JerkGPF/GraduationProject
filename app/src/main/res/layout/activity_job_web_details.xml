@@ -90,14 +90,14 @@
                     android:id="@+id/iv_collect"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@mipmap/icon_collect"/>
+                    android:src="@drawable/icon_message"/>
                 <TextView
                     android:id="@+id/tv_collect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:textSize="16sp"
-                    android:text="收藏"/>
+                    android:text="立即沟通"/>
             </LinearLayout>
             <TextView
                 android:layout_width="0dp"

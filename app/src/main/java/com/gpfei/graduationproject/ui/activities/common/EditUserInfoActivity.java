@@ -87,7 +87,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                 new Thread() {
                     public void run() {
                         //执行耗时操作
-                        saveSignBean();
+                        saveSignBean();//签到
                         //更新主线程UI
                         runOnUiThread(new Runnable() {
                             @Override
@@ -136,7 +136,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
     }
 
     /**
-     * 添加一对一关联，当前用户发布帖子
+     * 添加一对一关联，当前用户签到赋初值0
      */
     private void saveSignBean() {
         SignInBean signInBean = new SignInBean();
@@ -152,7 +152,6 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         });
-
     }
 
     protected void showDatePickDlg() {
