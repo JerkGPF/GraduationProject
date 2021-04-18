@@ -20,10 +20,11 @@ import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.beans.SelectAndResume;
-import com.gpfei.graduationproject.message.MessageActivity;
+import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
-import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.hyphenate.easeui.EaseConstant;
 import com.longsh.optionframelibrary.OptionCenterDialog;
 
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
-import cn.bmob.v3.listener.UpdateListener;
 
 public class JobWebDetailsActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView iv_back;
@@ -124,13 +124,34 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
                         @Override
                         public void done(DayBean object,BmobException e) {
                             if(e==null){
-                                String authorid = object.getAuthor().getObjectId();//获取发布者的id；
-                                String userid = bmobUser.getObjectId();
-                                Intent intent = new Intent(JobWebDetailsActivity.this, MessageActivity.class);
-                                intent.putExtra("authorid", authorid);
-                                intent.putExtra("userid", userid);
-                                startActivity(intent);
-
+                                String authorId = object.getAuthor().getObjectId();
+                                new Thread(){
+                                    @Override
+                                    public void run() {
+                                        //查找Person表里面id为6b6c11c537的数据
+                                        BmobQuery<User> bmobQuery = new BmobQuery<User>();
+                                        bmobQuery.getObject(authorId, new QueryListener<User>() {
+                                            @Override
+                                            public void done(User object,BmobException e) {
+                                                if(e==null){
+                                                    String author = object.getUsername();
+                                                   runOnUiThread(new Runnable() {
+                                                       @Override
+                                                       public void run() {
+                                                           Log.d("author>>>>>>>>", author);
+                                                           Intent chat = new Intent(JobWebDetailsActivity.this,MessageActivity.class);
+                                                           chat.putExtra(EaseConstant.EXTRA_USER_ID,author);  //对方账号
+                                                           chat.putExtra(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE); //单聊模式
+                                                           startActivity(chat);
+                                                       }
+                                                   });
+                                                }else{
+                                                    Toast.makeText(JobWebDetailsActivity.this, "查询失败"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }.start();
                             }else{
                                 Toast.makeText(JobWebDetailsActivity.this, "查找失败", Toast.LENGTH_SHORT).show();
                             }

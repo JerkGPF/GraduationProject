@@ -16,6 +16,8 @@ import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.utils.DataCleanManager;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
 import com.longsh.optionframelibrary.OptionBottomDialog;
 import com.longsh.optionframelibrary.OptionMaterialDialog;
 
@@ -136,13 +138,38 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         if (position == 0) {
-                            BmobUser.logOut(); //清除缓存用户·对象
-                            Intent intent = new Intent(SettingActivity.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            ToastUtils.showImageToast(SettingActivity.this, "已退出登录");
-                            SettingActivity.this.finish();
-                            optionBottomDialog.dismiss();
+                            new Thread(){
+                                @Override
+                                public void run() {
+                                    EMClient.getInstance().logout(false, new EMCallBack() {
+                                        @Override
+                                        public void onSuccess() {
+                                            BmobUser.logOut(); //清除缓存用户·对象
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Intent intent = new Intent(SettingActivity.this, MainActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent);
+                                                    ToastUtils.showImageToast(SettingActivity.this, "已退出登录");
+                                                    SettingActivity.this.finish();
+                                                    optionBottomDialog.dismiss();
+                                                }
+                                            });
+                                        }
+                                        @Override
+                                        public void onError(int i, String s) {
+
+                                        }
+
+                                        @Override
+                                        public void onProgress(int i, String s) {
+
+                                        }
+                                    });
+                                }
+                            }.start();
+
                         }
                     }
                 });

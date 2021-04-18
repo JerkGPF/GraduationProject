@@ -11,12 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.SignInBean;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.common.EditUserInfoActivity;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -39,7 +42,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view =  inflater.inflate(R.layout.fragment_register, container, false);
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
         initView(view);
         return view;
     }
@@ -59,39 +62,67 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_register:
                 if (et_phone.getText().toString().isEmpty()) {
                     ToastUtils.showImageToast(getContext(), "账号不能为空哟~");
-                }else if (et_phone.getText().toString().length()<6) {
+                } else if (et_phone.getText().toString().length() < 6) {
                     ToastUtils.showImageToast(getContext(), "账号不能小于6位哟~");
-                }else if (et_pwd.getText().toString().isEmpty()) {
+                } else if (et_pwd.getText().toString().isEmpty()) {
                     ToastUtils.showImageToast(getContext(), "密码不能为空哟~");
-                }else if (et_pwd.getText().toString().length()<6){
+                } else if (et_pwd.getText().toString().length() < 6) {
                     ToastUtils.showImageToast(getContext(), "密码不能小于6位哟~");
-                }else if (et_pwd2.getText().toString().isEmpty()) {
+                } else if (et_pwd2.getText().toString().isEmpty()) {
                     ToastUtils.showImageToast(getContext(), "确认一下密码~");
-                }else if (!et_pwd2.getText().toString().equals(et_pwd.getText().toString())){
+                } else if (!et_pwd2.getText().toString().equals(et_pwd.getText().toString())) {
                     ToastUtils.showImageToast(getContext(), "两次密码不一致~");
-                }else {
-                    //注册
-                    BmobUser bmobUser = new BmobUser();
-                    bmobUser.setUsername(et_phone.getText().toString().trim());
-                    bmobUser.setPassword(et_pwd.getText().toString().trim());
-                    bmobUser.signUp(new SaveListener<Object>() {
+                } else {
+                    String username = et_phone.getText().toString().trim();
+                    String password = et_pwd.getText().toString().trim();
+
+                    new Thread() {
                         @Override
-                        public void done(Object o, BmobException e) {
-                            if (e == null) {
-                                ToastUtils.showImageToast(getContext(), "注册成功！！");
-                                Intent intent=new Intent(getContext(), EditUserInfoActivity.class);
-                                startActivity(intent);
-                            } else {
-                                ToastUtils.showTextToast(getContext(), "用户可能已经存在！");
+                        public void run() {
+                            //注册环信
+                            try {
+                                EMClient.getInstance().createAccount(username, password);
+                                //注册Bmob后端云
+                                BmobUser bmobUser = new BmobUser();
+                                bmobUser.setUsername(username);
+                                bmobUser.setPassword(password);
+                                bmobUser.signUp(new SaveListener<Object>() {
+                                    @Override
+                                    public void done(Object o, BmobException e) {
+                                        if (e == null) {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ToastUtils.showImageToast(getContext(), "注册成功！！");
+                                                    Intent intent = new Intent(getContext(), EditUserInfoActivity.class);
+                                                    startActivity(intent);                                                }
+                                            });
+                                        } else {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ToastUtils.showTextToast(getContext(), "注册失败"+e);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            } catch (HyphenateException e) {
+                                e.printStackTrace();
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), "注册失败"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         }
-                    });
+                    }.start();
                 }
                 break;
         }
 
     }
-
 
 
 }

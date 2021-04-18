@@ -18,11 +18,14 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.EditUserInfoActivity;
+import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyDataActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
 import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.hyphenate.easeui.EaseConstant;
 import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
 import cn.bmob.v3.BmobQuery;
@@ -36,6 +39,7 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
     private TextView tv_title;
     private TextView tv_name,tv_phone,tv_sex,tv_birth,tv_qq,tv_email,tv_induce,tv_experience;
     private FloatingActionButton fab;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,11 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("author>>>>>>>>", username);
+                Intent chat = new Intent(HrCheckUserInfoActivity.this, MessageActivity.class);
+                chat.putExtra(EaseConstant.EXTRA_USER_ID,username);  //对方账号
+                chat.putExtra(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE); //单聊模式
+                startActivity(chat);
                 Toast.makeText(HrCheckUserInfoActivity.this, "fab被点击了", Toast.LENGTH_SHORT).show();
             }
         });
@@ -116,6 +125,7 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
                     tv_experience.setText(myUser.getExperience());
                     tv_birth.setText(myUser.getBirthday());
 
+                    username = myUser.getUsername();
                     Log.d("cehngg",myUser.getUsername());
                 } else {
                     Toast.makeText(HrCheckUserInfoActivity.this, "错误"+e.getMessage(), Toast.LENGTH_SHORT).show();

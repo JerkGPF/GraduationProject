@@ -5,13 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.gpfei.graduationproject.R;
-import com.gpfei.graduationproject.message.MessageActivity;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.common.MainActivity;
+import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
 import com.gpfei.graduationproject.ui.activities.hr.HrMainActivity;
+import com.hyphenate.chat.EMClient;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobUser;
 
 
 /**
@@ -21,21 +29,53 @@ import cn.bmob.v3.Bmob;
 public class WelcomeActivity extends AppCompatActivity {
 
     private final long SPLASH_LENGTH = 2000;
-    Handler handler = new Handler();
+    Timer timer = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        //bmob初始化key
-        Bmob.initialize(this, "833216a424abc46085b12199c637bf38");
-        handler.postDelayed(new Runnable() {
+
+        timer.schedule(new TimerTask() {
+            /**
+             * 首先对环信服务器进行判断，
+             *然后对Bmob进行登录判读
+             */
             @Override
             public void run() {
-                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+               // startActivity(new Intent(WelcomeActivity.this,MessageActivity.class));
+                new Thread(){
+                    @Override
+                    public void run() {
+                        if (EMClient.getInstance().isLoggedInBefore()){
+                            //环信已登录
+                            BmobUser bmobUser = BmobUser.getCurrentUser(User.class);
+                            if (bmobUser!=null){
+                                Intent intent = new Intent(WelcomeActivity.this, HrMainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //startActivity(new Intent(WelcomeActivity.this,MainActivity.class));
+                                        Toast.makeText(WelcomeActivity.this, "Bmob未登录", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }else {
+                            //环信未登录
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(WelcomeActivity.this, "环信未登录", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(WelcomeActivity.this,LoginAndRegisterActivity.class));
+                                }
+                            });
+                        }
+                    }
+                }.start();
             }
         }, SPLASH_LENGTH);
     }

@@ -7,6 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
 
+
     sourceSets {
         main.jniLibs.srcDirs = ['libs']
     }
@@ -17,6 +18,8 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
+
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,16 +30,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    useLibrary 'org.apache.http.legacy'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    repositories {
-        flatDir {
-            dirs 'libs'
-        }
-    }    // 此在android标签下添加
-
 }
 
 dependencies {
@@ -45,11 +43,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation project(path: ':easeui')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    //TODO 集成：1.2、配置IM SDK（bmob-im）版本和Data SDK（bmob-sdk）版本：特定版本的bmob-im依赖特定版本的bmob-sdk
-    implementation 'cn.bmob.android:bmob-im:2.1.5@aar'
 
     //bmob后端云依赖
     implementation 'cn.bmob.android:bmob-sdk:3.7.8'
@@ -67,9 +64,10 @@ dependencies {
     implementation 'com.jwenfeng.pulltorefresh:library:1.0.3'//下拉刷新
     implementation 'pub.devrel:easypermissions:0.4.3'//权限请求
 
-    implementation 'com.orhanobut:logger:1.4'
+    implementation 'com.android.support:multidex:1.0.3'
 
-    implementation 'org.greenrobot:eventbus:3.0.0'
+
+
 
 
 

@@ -11,12 +11,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.ui.activities.common.MainActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
 import com.gpfei.graduationproject.ui.activities.hr.HrMainActivity;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -65,24 +68,63 @@ public class HrLoginFragment extends Fragment implements View.OnClickListener {
                 } else if (et_pwd_login.getText().toString().length() < 6) {
                     ToastUtils.showTextToast(getContext(), "密码不能小于6位哟~~");
                 } else {
+                    String username = et_phone_login.getText().toString().trim();
+                    String passworld = et_pwd_login.getText().toString().trim();
                     //登录
-                    BmobUser bmobUser = new BmobUser();
-                    bmobUser.setUsername(et_phone_login.getText().toString().trim());
-                    bmobUser.setPassword(et_pwd_login.getText().toString().trim());
-                    bmobUser.login(new SaveListener<Object>() {
+                    new Thread(){
                         @Override
-                        public void done(Object o, BmobException e) {
-                            if (e == null) {
-                                ToastUtils.showImageToast(getContext(), "登录成功");
-                                Intent intent = new Intent(getContext(), HrMainActivity.class);
-                                //清空栈底
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            } else {
-                                ToastUtils.showTextToast(getContext(), "登录超时！请重试");
-                            }
+                        public void run() {
+                            EMClient.getInstance().login(username, passworld, new EMCallBack() {
+                                @Override
+                                public void onSuccess() {
+                                    BmobUser bmobUser = new BmobUser();
+                                    bmobUser.setUsername(username);
+                                    bmobUser.setPassword(passworld);
+                                    bmobUser.login(new SaveListener<Object>() {
+                                        @Override
+                                        public void done(Object o, BmobException e) {
+                                            if (e == null) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        ToastUtils.showImageToast(getContext(), "登录成功");
+                                                        Intent intent = new Intent(getContext(), HrMainActivity.class);
+                                                        //清空栈底
+                                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        startActivity(intent);
+                                                    }
+                                                });
+                                            } else {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        ToastUtils.showTextToast(getContext(), "登录超时！请重试");
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+
+                                }
+
+                                @Override
+                                public void onError(int i, String s) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getActivity(), "登录失败"+s, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onProgress(int i, String s) {
+
+                                }
+                            });
                         }
-                    });
+                    }.start();
+
                 }
                 break;
             case R.id.tv_HR_login:
