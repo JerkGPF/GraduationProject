@@ -48,7 +48,7 @@ public class HrMessageFragment extends EaseConversationListFragment {
 
     private void initData() {
         // run in a second
-        final long timeInterval = 10000;
+        final long timeInterval = 1000;
         Runnable runnable = new Runnable() {
             public void run() {
                 while (true) {

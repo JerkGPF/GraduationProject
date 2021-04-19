@@ -52,7 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
                             //环信已登录
                             BmobUser bmobUser = BmobUser.getCurrentUser(User.class);
                             if (bmobUser!=null){
-                                Intent intent = new Intent(WelcomeActivity.this, HrMainActivity.class);
+                                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             }else {

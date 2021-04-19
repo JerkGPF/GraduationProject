@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.gpfei.graduationproject.R;
+import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.fragments.common.FindFragment;
 import com.gpfei.graduationproject.ui.fragments.common.HomeFragment;
 import com.gpfei.graduationproject.ui.fragments.common.MessageFragment;
@@ -23,6 +25,9 @@ import com.gpfei.graduationproject.ui.fragments.common.UserFragment;
 import com.gpfei.graduationproject.ui.fragments.hr.HrIndexFragment;
 import com.gpfei.graduationproject.ui.fragments.hr.HrMessageFragment;
 import com.gpfei.graduationproject.ui.fragments.hr.HrMyFragment;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.ui.EaseConversationListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +95,12 @@ public class HrMainActivity extends FragmentActivity implements RadioGroup.OnChe
             case R.id.rb_message:
                 if (messageFragment==null){
                     messageFragment=new HrMessageFragment();
+                    messageFragment.setConversationListItemClickListener(new EaseConversationListFragment.EaseConversationListItemClickListener() {
+                        @Override
+                        public void onListItemClicked(EMConversation conversation) {
+                            startActivity(new Intent(getApplicationContext(), MessageActivity.class).putExtra(EaseConstant.EXTRA_USER_ID,conversation.conversationId()));
+                        }
+                    });
                     fragmentTransaction.add(R.id.hr_fraglayout,messageFragment);
                 }else {
                     fragmentTransaction.show(messageFragment);

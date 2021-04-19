@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,10 +15,14 @@ import android.widget.RadioGroup;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.SignInBean;
 import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.fragments.common.FindFragment;
 import com.gpfei.graduationproject.ui.fragments.common.HomeFragment;
 import com.gpfei.graduationproject.ui.fragments.common.MessageFragment;
 import com.gpfei.graduationproject.ui.fragments.common.UserFragment;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.easeui.EaseConstant;
+import com.hyphenate.easeui.ui.EaseConversationListFragment;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -107,6 +112,12 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             case R.id.rb3:
                 if (messageFragment==null){
                     messageFragment=new MessageFragment();
+                    messageFragment.setConversationListItemClickListener(new EaseConversationListFragment.EaseConversationListItemClickListener() {
+                        @Override
+                        public void onListItemClicked(EMConversation conversation) {
+                            startActivity(new Intent(getApplicationContext(), MessageActivity.class).putExtra(EaseConstant.EXTRA_USER_ID,conversation.conversationId()));
+                        }
+                    });
                     fragmentTransaction.add(R.id.fl_content,messageFragment);
                 }else {
                     fragmentTransaction.show(messageFragment);

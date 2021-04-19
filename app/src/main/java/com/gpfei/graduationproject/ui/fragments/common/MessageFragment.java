@@ -42,20 +42,20 @@ import cn.bmob.v3.listener.FindListener;
  * Use the {@link MessageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MessageFragment extends EaseConversationListFragment implements View.OnClickListener {
+public class MessageFragment extends EaseConversationListFragment{
+
     @Override
     protected void initView() {
         super.initView();
         hideTitleBar();
         initData();
 
+
     }
-
-
 
     private void initData() {
         // run in a second
-        final long timeInterval = 10000;
+        final long timeInterval = 1000;
         Runnable runnable = new Runnable() {
             public void run() {
                 while (true) {
@@ -74,9 +74,5 @@ public class MessageFragment extends EaseConversationListFragment implements Vie
         thread.start();
     }
 
-    @Override
-    public void onClick(View v) {
-
-    }
 
 }
