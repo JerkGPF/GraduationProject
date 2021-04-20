@@ -121,7 +121,6 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                                                 startActivity(intent);
                                             } else {
                                                 ToastUtils.showImageToast(EditUserInfoActivity.this, "更新失败！" + e.getMessage());
-
                                             }
                                         }
                                     });

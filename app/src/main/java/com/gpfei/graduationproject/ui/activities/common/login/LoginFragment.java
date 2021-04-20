@@ -33,7 +33,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private EditText et_phone_login;
     private EditText et_pwd_login;
     private Button btn_login;
-    private TextView tv_HR;
+    private TextView tv_HR,tv_login;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,10 +47,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private void initView(View view) {
         et_phone_login = view.findViewById(R.id.et_phone_login);
         et_pwd_login = view.findViewById(R.id.et_pwd_login);
+        tv_login = view.findViewById(R.id.tv_login);
         btn_login = view.findViewById(R.id.btn_login);
         tv_HR = view.findViewById(R.id.tv_HR_login);
         btn_login.setOnClickListener(this);
         tv_HR.setOnClickListener(this);
+        tv_login.setOnClickListener(this);
     }
 
     @Override
@@ -130,6 +132,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
+            case R.id.tv_login:
+                startActivity(new Intent(getContext(),MainActivity.class));
         }
         
     }

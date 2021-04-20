@@ -76,42 +76,7 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
         iv_sharing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ArrayList<String> list = new ArrayList<>();
-                list.add("分享");
-                list.add("投递");
-                list.add("取消");
-                final OptionCenterDialog optionCenterDialog = new OptionCenterDialog();
-                optionCenterDialog.show(JobWebDetailsActivity.this, list);
-                optionCenterDialog.setItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        switch (position) {
-                            case 0:
-                                ToastUtils.showImageToast(JobWebDetailsActivity.this, "分享成功");
-                                break;
-                            case 1:
-//                                SelectAndResume selectAndResume = new SelectAndResume();
-//                                selectAndResume.setDelivery(true);
-//                                selectAndResume.update(objectId, new UpdateListener() {
-//                                    @Override
-//                                    public void done(BmobException e) {
-//                                        if(e==null){
-//                                            SmileToast smileToast = new SmileToast();
-//                                            smileToast.smile("投递成功");
-//                                        }else{
-//                                            Toast.makeText(JobWebDetailsActivity.this, "投递失败", Toast.LENGTH_SHORT).show();
-//                                        }
-//                                    }
-//
-//                                });
-                                ToastUtils.showImageToast(JobWebDetailsActivity.this, "投递成功");
-                                break;
-                            default:
-                                break;
-                        }
-                        optionCenterDialog.dismiss();
-                    }
-                });
+                ToastUtils.showImageToast(JobWebDetailsActivity.this, "分享成功");
             }
         });
         ll_collect.setOnClickListener(new View.OnClickListener() {

@@ -115,7 +115,6 @@ public class HrMainActivity extends FragmentActivity implements RadioGroup.OnChe
                 }
                 break;
         }
-
         //提交事务
         fragmentTransaction.commit();
 

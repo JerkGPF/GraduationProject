@@ -78,7 +78,6 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
                 chat.putExtra(EaseConstant.EXTRA_USER_ID,username);  //对方账号
                 chat.putExtra(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE); //单聊模式
                 startActivity(chat);
-                Toast.makeText(HrCheckUserInfoActivity.this, "fab被点击了", Toast.LENGTH_SHORT).show();
             }
         });
     }

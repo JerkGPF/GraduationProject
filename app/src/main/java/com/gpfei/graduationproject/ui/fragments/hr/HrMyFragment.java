@@ -43,6 +43,7 @@ import com.gpfei.graduationproject.ui.activities.common.MyInfoActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyIntegralActivity;
 import com.gpfei.graduationproject.ui.activities.common.SettingActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
+import com.gpfei.graduationproject.ui.activities.hr.HrDataActivity;
 import com.gpfei.graduationproject.ui.activities.hr.MyPublishActivity;
 import com.gpfei.graduationproject.ui.activities.hr.PostActivity;
 import com.gpfei.graduationproject.ui.fragments.common.UserFragment;
@@ -78,7 +79,7 @@ public class HrMyFragment extends Fragment implements View.OnClickListener {
     private LinearLayout ll_menu4;
     private TextView tv_username;
     private TextView tv_motto;
-    private RelativeLayout rl_user;
+//    private RelativeLayout rl_user;
     private LinearLayout ll_class;
     private static final int INFO_CODE = 1;
 
@@ -119,8 +120,8 @@ public class HrMyFragment extends Fragment implements View.OnClickListener {
         tv_username =  view.findViewById(R.id.tv_username);
         iv_user_head =  view.findViewById(R.id.iv_user_head);
         tv_motto =  view.findViewById(R.id.tv_motto_user);
-        rl_user =  view.findViewById(R.id.rl_user);
-        rl_user.setOnClickListener(this);
+//        rl_user =  view.findViewById(R.id.rl_user);
+        //rl_user.setOnClickListener(this);
         ll_class =  view.findViewById(R.id.ll_class);
 
 
@@ -171,18 +172,18 @@ public class HrMyFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         BmobUser bmobUser = BmobUser.getCurrentUser(MyUser.class);
         switch (v.getId()) {
-            case R.id.rl_user:
-                //判断登录是否为空
-                if (bmobUser != null) {
-                    Intent intent = new Intent(getContext(), MyInfoActivity.class);
-                    startActivityForResult(intent, INFO_CODE);
-                } else {
-                    startActivity(new Intent(getContext(), LoginAndRegisterActivity.class));
-                }
-                break;
+//            case R.id.rl_user:
+//                //判断登录是否为空
+//                if (bmobUser != null) {
+//                    Intent intent = new Intent(getContext(), MyInfoActivity.class);
+//                    startActivityForResult(intent, INFO_CODE);
+//                } else {
+//                    startActivity(new Intent(getContext(), LoginAndRegisterActivity.class));
+//                }
+//                break;
             case R.id.ll_menu1:
                 if (bmobUser != null) {
-                    startActivity(new Intent(getContext(), MyDataActivity.class));
+                    startActivity(new Intent(getContext(), HrDataActivity.class));
                 } else {
                     startActivity(new Intent(getContext(), LoginAndRegisterActivity.class));
                     ToastUtils.showTextToast(getContext(), "请先登录!");

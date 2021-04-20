@@ -31,6 +31,7 @@ import com.gpfei.graduationproject.beans.PostAndUser;
 import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.SelectionBean;
 import com.gpfei.graduationproject.beans.User;
+import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.HelpActivity;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyIntegralActivity;
@@ -38,6 +39,7 @@ import com.gpfei.graduationproject.ui.activities.hr.HrCheckUserInfoActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
+import com.hyphenate.easeui.EaseConstant;
 import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
 import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
@@ -62,6 +64,8 @@ public class FullTimePostFragment extends Fragment {
     private List<SelectAndResume> datalist = new ArrayList<>();
     private LinearLayout ll_myCollect;
     private PullToRefreshLayout refresh_job;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -192,6 +196,7 @@ public class FullTimePostFragment extends Fragment {
             postAndUser.setSex(sa.getUser().getSex());
             list.add(postAndUser);
         }
+
         rRecyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         PostAndUserAdapter adapter = new PostAndUserAdapter(getApplicationContext(), list, "");
         rRecyclerview.setItemAnimator(new DefaultItemAnimator());
@@ -201,7 +206,11 @@ public class FullTimePostFragment extends Fragment {
         adapter.setOnItemClickLitener(new PostAndUserAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                //点击事件联系对方
+                //点击事件
+                Intent intent = new Intent(getContext(), HrCheckUserInfoActivity.class);
+                intent.putExtra("objectId", datalist.get(position).getUser().getObjectId());
+                Log.d("objectId>>>>>>>>>>>>>>>",datalist.get(position).getUser().getObjectId());
+                startActivity(intent);
             }
 
             @Override

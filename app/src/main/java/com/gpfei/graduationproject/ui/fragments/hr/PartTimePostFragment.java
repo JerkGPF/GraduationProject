@@ -1,5 +1,6 @@
 package com.gpfei.graduationproject.ui.fragments.hr;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -26,6 +27,7 @@ import com.gpfei.graduationproject.beans.PostAndUserPart;
 import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.beans.WeekendBean;
+import com.gpfei.graduationproject.ui.activities.hr.HrCheckUserInfoActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
@@ -194,6 +196,10 @@ public class PartTimePostFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 //点击事件联系对方
+                Intent intent = new Intent(getContext(), HrCheckUserInfoActivity.class);
+                intent.putExtra("objectId", datalist.get(position).getUser().getObjectId());
+                Log.d("objectId>>>>>>>>>>>>>>>",datalist.get(position).getUser().getObjectId());
+                startActivity(intent);
             }
 
             @Override

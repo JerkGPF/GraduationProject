@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.HrUser;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.beans.SignInBean;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.hr.login.HrLoginAndRegisterActivity;
 
@@ -26,6 +27,7 @@ import java.util.Calendar;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class HrUpdateInfoActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView tv_title;
@@ -60,6 +62,47 @@ public class HrUpdateInfoActivity extends AppCompatActivity implements View.OnCl
         ll_select_company_age.setOnClickListener(this);
         iv_back.setOnClickListener(this);
         btn_submit.setOnClickListener(this);
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveSignBean();//签到
+
+                MyUser user = BmobUser.getCurrentUser(MyUser.class);
+                if (user!=null){
+                    user.setHR(true);
+                    user.update(new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e==null){
+                                Log.d("IsHR", user.getHR().toString());
+                            }else {
+                            }
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 添加一对一关联，当前用户签到赋初值0
+     */
+    private void saveSignBean() {
+        SignInBean signInBean = new SignInBean();
+        signInBean.setIntergal(0);
+        //添加一对一关联，用户关联帖子
+        signInBean.setUser(BmobUser.getCurrentUser(User.class));
+        signInBean.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if (e == null) {
+                } else {
+                    Log.e("BMOB", e.toString());
+                }
+            }
+        });
     }
 
     @Override

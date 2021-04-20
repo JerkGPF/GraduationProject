@@ -63,13 +63,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:orientation="horizontal"
         android:layout_marginTop="50dp">
         <TextView
+            android:layout_marginRight="25dp"
+            android:id="@+id/tv_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="游客登录"
+            android:textSize="15sp" />
+        <TextView
+            android:layout_marginLeft="25dp"
             android:id="@+id/tv_HR_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:text="企业登录 点击这里！"
+            android:text="企业登录"
             android:textSize="15sp" />
     </LinearLayout>
 

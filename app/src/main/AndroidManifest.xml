@@ -31,7 +31,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GraduationProject"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.activities.MessageActivity"></activity>
+        <activity android:name=".ui.activities.hr.HrEditInfoActivity"></activity>
+        <activity android:name=".ui.activities.hr.HrDataActivity" />
+        <activity android:name=".ui.activities.MessageActivity" />
         <activity android:name=".ui.activities.hr.PostActivity" />
         <activity android:name=".ui.activities.hr.ModifyPracticeActivity" />
         <activity android:name=".ui.activities.hr.ModifyPartActivity" />
