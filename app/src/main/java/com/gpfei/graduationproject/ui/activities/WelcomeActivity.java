@@ -36,7 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private final long SPLASH_LENGTH = 2000;
     Timer timer = new Timer();
-    private Boolean isHR = true;
+    private Boolean isHR = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,12 @@ public class WelcomeActivity extends AppCompatActivity {
                         @Override
                         public void done(User object, BmobException e) {
                             if(e==null){
-                                isHR = object.getHR();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        isHR = object.getHR();
+                                    }
+                                });
                             }else{
 
                             }

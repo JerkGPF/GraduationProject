@@ -27,6 +27,7 @@ import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
 import com.gpfei.graduationproject.utils.ToastUtils;
 import com.longsh.optionframelibrary.OptionCenterDialog;
+import com.mob.MobSDK;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,11 +63,11 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
     }
 
     private void initView(View view) {
-        rRecyclerview = (RecyclerView) view.findViewById(R.id.sRecyclerview);
-        rl_load_view3 = (RelativeLayout) view.findViewById(R.id.rl_load_view3);
-        btn_load3 = (Button) view.findViewById(R.id.btn_load3);
+        rRecyclerview =  view.findViewById(R.id.sRecyclerview);
+        rl_load_view3 = view.findViewById(R.id.rl_load_view3);
+        btn_load3 =  view.findViewById(R.id.btn_load3);
         btn_load3.setOnClickListener(this);
-        rl_network_error3 = (RelativeLayout) view.findViewById(R.id.rl_network_error3);
+        rl_network_error3 =  view.findViewById(R.id.rl_network_error3);
     }
 
     //加载列表数据
@@ -111,7 +113,9 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     switch (position){
                                         case 0:
-                                            ToastUtils.showImageToast(getContext(),"分享成功");
+                                            String url = datalist.get(position).getUrl_selection();
+                                            String title = datalist.get(position).getTitle_selection();
+                                            share(url,title);
                                             break;
                                         case 1:
                                             setMessage(pos, "投递", true);
@@ -135,6 +139,22 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    private void share(String url, String title) {
+        OnekeyShare oks = new OnekeyShare();
+        // title标题，微信、QQ和QQ空间等平台使用
+        //oks.setTitle(getString(R.string.share));
+        // titleUrl QQ和QQ空间跳转链接
+        oks.setTitleUrl(url);
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(title);
+        // setImageUrl是网络图片的url
+        //oks.setImageUrl("https://hmls.hfbank.com.cn/hfapp-api/9.png");
+        // url在微信、Facebook等平台中使用
+        oks.setUrl(url);
+        // 启动分享GUI
+        oks.show(MobSDK.getContext());
     }
 
     //封装投递与收藏状态

@@ -10,6 +10,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import com.gpfei.graduationproject.ui.activities.common.MyApplyActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyAttentionActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyCollectActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyDataActivity;
+import com.gpfei.graduationproject.ui.activities.common.MyFileActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyInfoActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyIntegralActivity;
 import com.gpfei.graduationproject.ui.activities.common.SettingActivity;
@@ -68,6 +70,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private RelativeLayout rl_menu_item4;
     private RelativeLayout rl_menu_item5;
     private RelativeLayout rl_menu_item6;
+    private RelativeLayout rl_menu_item_jianli;
     private LinearLayout ll_menu1;
     private LinearLayout ll_menu2;
     private LinearLayout ll_menu3;
@@ -83,7 +86,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     String updatedAt;
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,45 +97,63 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
 
     private void initView(View view) {
-        rl_menu_item1 =  view.findViewById(R.id.rl_menu_item1);
+        rl_menu_item1 = view.findViewById(R.id.rl_menu_item1);
         rl_menu_item1.setOnClickListener(this);
-        rl_menu_item2 =  view.findViewById(R.id.rl_menu_item2);
+        rl_menu_item2 = view.findViewById(R.id.rl_menu_item2);
         rl_menu_item2.setOnClickListener(this);
-        rl_menu_item3 =  view.findViewById(R.id.rl_menu_item3);
+        rl_menu_item3 = view.findViewById(R.id.rl_menu_item3);
         rl_menu_item3.setOnClickListener(this);
-        rl_menu_item4 =  view.findViewById(R.id.rl_menu_item4);
+        rl_menu_item4 = view.findViewById(R.id.rl_menu_item4);
         rl_menu_item4.setOnClickListener(this);
-        rl_menu_item5 =  view.findViewById(R.id.rl_menu_item5);
+        rl_menu_item5 = view.findViewById(R.id.rl_menu_item5);
         rl_menu_item5.setOnClickListener(this);
-        rl_menu_item6 =  view.findViewById(R.id.rl_menu_item6);
+        rl_menu_item6 = view.findViewById(R.id.rl_menu_item6);
         rl_menu_item6.setOnClickListener(this);
-        ll_menu1 =  view.findViewById(R.id.ll_menu1);
+        rl_menu_item_jianli = view.findViewById(R.id.rl_menu_item_jianli);
+        rl_menu_item_jianli.setOnClickListener(this);
+        ll_menu1 = view.findViewById(R.id.ll_menu1);
         ll_menu1.setOnClickListener(this);
-        ll_menu2 =  view.findViewById(R.id.ll_menu2);
+        ll_menu2 = view.findViewById(R.id.ll_menu2);
         ll_menu2.setOnClickListener(this);
-        ll_menu3 =  view.findViewById(R.id.ll_menu3);
+        ll_menu3 = view.findViewById(R.id.ll_menu3);
         ll_menu3.setOnClickListener(this);
-        ll_menu4 =  view.findViewById(R.id.ll_menu4);
+        ll_menu4 = view.findViewById(R.id.ll_menu4);
         ll_menu4.setOnClickListener(this);
-        tv_username =  view.findViewById(R.id.tv_username);
-        iv_user_head =  view.findViewById(R.id.iv_user_head);
-        tv_motto =  view.findViewById(R.id.tv_motto_user);
-        rl_user =  view.findViewById(R.id.rl_user);
+        tv_username = view.findViewById(R.id.tv_username);
+        iv_user_head = view.findViewById(R.id.iv_user_head);
+        tv_motto = view.findViewById(R.id.tv_motto_user);
+        rl_user = view.findViewById(R.id.rl_user);
         rl_user.setOnClickListener(this);
         ll_class = view.findViewById(R.id.ll_class);
 
+
+
+        showInfo();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                queryIntegral();
+            }
+        }).start();
+    }
+
+    private void showInfo() {
         MyUser user = BmobUser.getCurrentUser(MyUser.class);
         if (user != null) {
             //获取头像地址
-            if (user.getHead() != null) {
-                Glide.with(getContext()).load(user.getHead().toString()).asBitmap().centerCrop().into(new BitmapImageViewTarget(iv_user_head) {
+            if (user.getHead() != null&& !(TextUtils.isEmpty(user.getHead()))) {
+                //圆形头像
+                Glide.with(getActivity()).load(user.getHead()).asBitmap().centerCrop().into(new BitmapImageViewTarget(iv_user_head) {
                     @Override
                     protected void setResource(Bitmap resource) {
-                        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getContext().getResources(), resource);
+                        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getActivity().getResources(), resource);
                         circularBitmapDrawable.setCircular(true);
                         iv_user_head.setImageDrawable(circularBitmapDrawable);
                     }
                 });
+            }else {
+                iv_user_head.setImageResource(R.mipmap.icon_user_head);
             }
             //获取用户名
             if (user.getNick() == null && user.getUsername() != null) {
@@ -148,8 +168,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             //显示等级
             ll_class.setVisibility(View.VISIBLE);
         }
-
-        queryIntegral();
     }
 
     //查询出积分
@@ -168,8 +186,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     intergal = object.get(0).getIntergal();
                     objectId = object.get(0).getObjectId();
                     updatedAt = object.get(0).getUpdatedAt();
-                    updatedAt = updatedAt.substring(0,updatedAt.indexOf(" "));
-                    Log.d("updatedAt:",updatedAt+"");
+                    updatedAt = updatedAt.substring(0, updatedAt.indexOf(" "));
+                    Log.d("updatedAt:", updatedAt + "");
                 } else {
                     Log.e("BMOB", e.toString());
                 }
@@ -240,6 +258,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     ToastUtils.showTextToast(getContext(), "请先登录!");
                 }
                 break;
+            case R.id.rl_menu_item_jianli:
+                if (bmobUser != null) {
+                    startActivity(new Intent(getContext(), MyFileActivity.class));
+                } else {
+                    startActivity(new Intent(getContext(), LoginAndRegisterActivity.class));
+                    ToastUtils.showTextToast(getContext(), "请先登录!");
+                }
+                break;
             case R.id.rl_menu_item3:
                 startActivity(new Intent(getContext(), FeedBackActivity.class));
                 break;
@@ -255,11 +281,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 Intent intent6 = new Intent(getContext(), SettingActivity.class);
                 startActivity(intent6);
                 break;
+
+
             default:
                 break;
         }
 
     }
+
     //更新签到信息
     private void updateIntergal() {
         //添加当前时间
@@ -268,35 +297,35 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         String createTime = dateFormat.format(now);//格式化然后放入字符串中
         System.out.println(createTime);
         System.out.println(updatedAt.equals(createTime));
-        if (updatedAt.equals(createTime)&&intergal!=0){
-            ToastUtils.showImageToast(getActivity(),"已经签到过了！");
+        if (updatedAt.equals(createTime) && intergal != 0) {
+            ToastUtils.showImageToast(getActivity(), "已经签到过了！");
         }
-        if (updatedAt.equals(createTime)&&intergal == 0){
-            intergal +=2;
+        if (updatedAt.equals(createTime) && intergal == 0) {
+            intergal += 2;
             SignInBean signInBean = new SignInBean();
             signInBean.setIntergal(intergal);
             signInBean.update(objectId, new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
-                    if (e == null){
+                    if (e == null) {
                         signIn();
-                    }else {
-                        ToastUtils.showTextToast(getActivity(),"签到失败了"+e.getMessage());
+                    } else {
+                        ToastUtils.showTextToast(getActivity(), "签到失败了" + e.getMessage());
                     }
                 }
             });
         }
-        if (!updatedAt.equals(createTime)&& intergal != 0){
-            intergal +=2;
+        if (!updatedAt.equals(createTime) && intergal != 0) {
+            intergal += 2;
             SignInBean signInBean = new SignInBean();
             signInBean.setIntergal(intergal);
             signInBean.update(objectId, new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
-                    if (e == null){
+                    if (e == null) {
                         signIn();
-                    }else {
-                        ToastUtils.showTextToast(getActivity(),"签到失败了"+e.getMessage());
+                    } else {
+                        ToastUtils.showTextToast(getActivity(), "签到失败了" + e.getMessage());
                     }
                 }
             });

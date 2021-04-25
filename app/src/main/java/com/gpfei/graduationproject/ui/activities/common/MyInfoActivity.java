@@ -44,8 +44,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadFileListener;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -93,9 +98,9 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         rl_modify_user_head.setOnClickListener(this);
         rl_modify_user_nick = findViewById(R.id.rl_modify_user_nick);
         rl_modify_user_nick.setOnClickListener(this);
-        rl_modify_user_motto =  findViewById(R.id.rl_modify_user_motto);
+        rl_modify_user_motto = findViewById(R.id.rl_modify_user_motto);
         rl_modify_user_motto.setOnClickListener(this);
-        rl_to_mydata =  findViewById(R.id.rl_to_mydata);
+        rl_to_mydata = findViewById(R.id.rl_to_mydata);
         rl_to_mydata.setOnClickListener(this);
         rl_id = findViewById(R.id.rl_id);
         rl_id.setOnClickListener(this);
@@ -120,7 +125,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtils.showTextToast(MyInfoActivity.this,"没有更多内容了哟~");
+                        ToastUtils.showTextToast(MyInfoActivity.this, "没有更多内容了哟~");
                         //结束加载更多
                         refreshLayout.finishLoadMore();
                     }
@@ -130,6 +135,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         //显示用户信息
         showUserInfo();
     }
+
     //显示用户资料
     private void showUserInfo() {
         MyUser user = BmobUser.getCurrentUser(MyUser.class);
@@ -137,7 +143,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             //获取头像地址
             if (user.getHead() != null) {
                 //圆形头像
-                Glide.with(MyInfoActivity.this).load(user.getHead().toString()).asBitmap().centerCrop().into(new BitmapImageViewTarget(iv_user_head) {
+                Glide.with(MyInfoActivity.this).load(user.getHead()).asBitmap().centerCrop().into(new BitmapImageViewTarget(iv_user_head) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(MyInfoActivity.this.getResources(), resource);
@@ -192,7 +198,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
             case R.id.rl_id:
-                ToastUtils.showTextToast(MyInfoActivity.this,"用户ID不支持修改哟(＾Ｕ＾)");
+                ToastUtils.showTextToast(MyInfoActivity.this, "用户ID不支持修改哟(＾Ｕ＾)");
                 break;
             case R.id.rl_modify_user_nick:
                 Intent intent = new Intent(MyInfoActivity.this, ModifyUserInfoActivity.class);
@@ -210,6 +216,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         }
 
     }
+
     @AfterPermissionGranted(1)//添加注解，是为了首次执行权限申请后，回调该方法
     private void methodRequiresTwoPermission() {
         String[] perms = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -236,44 +243,6 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         startActivityForResult(intent, REQUEST_CAPTURE);//启动拍照
     }
 
-    //建立保存头像的路径及名称
-    private File getOutputMediaFile() {
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Android/data/"
-                + getApplicationContext().getPackageName()
-                + "/Files");
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                return null;
-            }
-        }
-        File mediaFile;
-        String mImageName = "head.png";
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
-        return mediaFile;
-    }
-
-
-    //保存图像
-    private void storeImage(Bitmap image) {
-        File pictureFile = getOutputMediaFile();
-        if (pictureFile == null) {
-            Log.d(TAG, "Error creating media file, check storage permissions: ");// e.getMessage());
-            return;
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-            image.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "File not found: " + e.getMessage());
-        } catch (IOException e) {
-            Log.d(TAG, "Error accessing file: " + e.getMessage());
-        }
-    }
-
-
     //选择相册
     private void selectAlbum() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -281,8 +250,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         startActivityForResult(intent, GALLERY_ACTIVITY_CODE);
     }
 
-    //裁剪照片
-    private void cropImage(Uri uri) {
+    //裁剪图片
+    private void performCrop(Uri uri) {
         try {
             Intent intent = new Intent("com.android.camera.action.CROP");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -307,14 +276,78 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * 随机生成与头像文件名进行拼接
+     * @return
+     */
+    public static String codeGen(){
+        char [] codeSequence={'a','b','c','d','e','f','g','h','i','j',
+                'k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                '1','2','3','4','5','6','7','8','9'};
+        Random random =new Random();
+        StringBuilder sb=new StringBuilder();//动态字符串，String创建的字符串不能修改
+        int count=0;//计数器确定产生的是四位验证码
+        while(true){
+            //随机产生一个下标，通过下标取出字符数组对应的字符
+            char c=codeSequence[random.nextInt(codeSequence.length)];
+            //假设取出来的字符在动态字符串中不存在，代表没有重复
+            if (sb.indexOf(c+"")==-1) {
+                sb.append(c);//追加到动态字符串中
+                count++;
+                if (count==4) {
+                    break;
+                }
+            }
+        }
+
+        return sb.toString();
+
+    }
+
+    //建立保存头像的路径及名称
+    private File getOutputMediaFile() {
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                + "/Android/data/"
+                + getApplicationContext().getPackageName()
+                + "/Files");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        File mediaFile;
+        String mImageName ="avatar.png";
+//        String mImageName ="avatar"+codeGen()+".png";
+        System.out.println("avatar"+mImageName);
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+        return mediaFile;
+    }
+
+    //保存图像
+    private void storeImage(Bitmap image) {
+        File pictureFile = getOutputMediaFile();
+        if (pictureFile == null) {
+            Log.d(TAG,
+                    "Error creating media file, check storage permissions: ");// e.getMessage());
+            return;
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        }
+    }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("resultCode"+resultCode);
         if (resultCode == RESULT_OK) {
-
             switch (requestCode) {
                 case REQUEST_INFO:
                     if (resultCode == 200) {
@@ -326,12 +359,12 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 case REQUEST_CAPTURE:
                     if (null != imageUri) {
                         localUri = imageUri;
-                        cropImage(localUri);
+                        performCrop(localUri);
                     }
                     break;
                 case REQUEST_PICTURE:
                     localUri = data.getData();
-                    cropImage(localUri);
+                    performCrop(localUri);
                     break;
                 case RESULT_CROP:
                     Bundle extras = data.getExtras();
@@ -342,18 +375,74 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                         // iv_user_head.setImageBitmap(mBitmap);
                         // storeImage(mBitmap);
                     } else {
-                        iv_user_head.setImageBitmap(selectedBitmap);
-                        storeImage(selectedBitmap);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String picPath = getOutputMediaFile().toString();
+                                BmobFile bmobFile = new BmobFile(new File(picPath));
+                                bmobFile.uploadblock(new UploadFileListener() {
+                                    @Override
+                                    public void done(BmobException e) {
+                                        if (e == null) {
+                                            saveFile(bmobFile);
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    SmileToast smileToast = new SmileToast();
+                                                    smileToast.smile("头像更新成功");
+                                                }
+                                            });
+                                            Log.d("上传文件", "上传文件中");
+                                            //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                                        } else {
+                                            Log.d("上传文件失败：", e.getMessage());
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onProgress(Integer value) {
+
+                                        // 返回的上传进度（百分比）
+                                    }
+                                });
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        iv_user_head.setImageBitmap(selectedBitmap);
+                                        storeImage(selectedBitmap);
+                                    }
+                                });
+                            }
+                        }).start();
                     }
                     break;
                 case GALLERY_ACTIVITY_CODE:
-
                     localUri = data.getData();
                     //  setBitmap(localUri);
-                    cropImage(localUri);
+                    performCrop(localUri);
                     break;
             }
         }
+    }
+
+    private void saveFile(BmobFile bmobFile) {
+        MyUser myUser = BmobUser.getCurrentUser(MyUser.class);
+        //更新Person表里面id为6b6c11c537的数据，address内容更新为“北京朝阳”
+        myUser.setHeadFile(bmobFile);
+        myUser.setHead(bmobFile.getFileUrl());
+        myUser.update(myUser.getObjectId(), new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    Log.d("上传文件成功:", bmobFile.getFileUrl());
+                    Log.d("上传文件成功:", bmobFile.getFilename());
+                } else {
+                    Log.d("上传文件失败：", e.getMessage());
+                }
+            }
+
+        });
     }
 
 }

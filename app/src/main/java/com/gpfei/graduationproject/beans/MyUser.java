@@ -1,7 +1,10 @@
 package com.gpfei.graduationproject.beans;
 
+import java.io.File;
+
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
 
 
 public class MyUser extends BmobUser {
@@ -17,6 +20,8 @@ public class MyUser extends BmobUser {
     private String name;
     private String birthday;
     private Boolean isHR;
+    private BmobFile file;
+    private BmobFile headFile;
 
     public String getBirthday() {
         return birthday;
@@ -112,5 +117,21 @@ public class MyUser extends BmobUser {
 
     public void setHR(Boolean HR) {
         isHR = HR;
+    }
+
+    public BmobFile getFile() {
+        return file;
+    }
+
+    public void setFile(BmobFile file) {
+        this.file = file;
+    }
+
+    public BmobFile getHeadFile() {
+        return headFile;
+    }
+
+    public void setHeadFile(BmobFile headFile) {
+        this.headFile = headFile;
     }
 }

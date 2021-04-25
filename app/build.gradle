@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
 }
 apply plugin: 'com.mob.sdk'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 
 
@@ -47,6 +49,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation project(path: ':easeui')
+    implementation 'androidx.exifinterface:exifinterface:1.2.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -67,11 +70,16 @@ dependencies {
     implementation 'com.jwenfeng.pulltorefresh:library:1.0.3'//下拉刷新
     implementation 'pub.devrel:easypermissions:0.4.3'//权限请求
 
+
+    //liftcycle
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    //eventbus
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
     implementation 'com.android.support:multidex:1.0.3'
-
-
-
-
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 
 
@@ -125,4 +133,7 @@ MobSDK {
 
         }
     }
+}
+repositories {
+    mavenCentral()
 }

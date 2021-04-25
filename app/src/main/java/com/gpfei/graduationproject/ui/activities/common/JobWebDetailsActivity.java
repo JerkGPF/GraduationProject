@@ -182,6 +182,7 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
 //                }
 //            }.start();
         }
+
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {

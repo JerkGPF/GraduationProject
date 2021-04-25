@@ -99,7 +99,7 @@ public class MyDataActivity extends AppCompatActivity implements View.OnClickLis
             //获取头像地址
             if (user.getHead() != null) {
                 //圆形头像
-                Glide.with(MyDataActivity.this).load(user.getHead().toString()).asBitmap().centerCrop().into(new BitmapImageViewTarget(iv_user_head) {
+                Glide.with(MyDataActivity.this).load(user.getHead()).asBitmap().centerCrop().into(new BitmapImageViewTarget(iv_user_head) {
                     @Override
                     protected void setResource(Bitmap resource) {
                         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(MyDataActivity.this.getResources(), resource);

@@ -31,7 +31,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GraduationProject"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.activities.hr.HrEditInfoActivity"></activity>
+        <activity android:name=".kotlin.upload.LocalUpdateActivity"></activity>
+        <activity android:name=".ui.activities.common.FileWebDetailsActivity" />
+        <activity android:name=".ui.activities.common.MyFileActivity" />
+        <activity android:name=".ui.activities.hr.HrEditInfoActivity" />
         <activity android:name=".ui.activities.hr.HrDataActivity" />
         <activity android:name=".ui.activities.MessageActivity" />
         <activity android:name=".ui.activities.hr.PostActivity" />
@@ -85,7 +88,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/provider_paths" />
+<!--            <meta-data-->
+<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
+<!--                android:resource="@xml/file_paths" />-->
         </provider>
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"

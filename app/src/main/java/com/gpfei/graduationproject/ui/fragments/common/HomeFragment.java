@@ -69,13 +69,13 @@ public class HomeFragment extends Fragment {
         my_viewpager.setAdapter(adapter);
         my_tab.setupWithViewPager(my_viewpager);
 
-        ll_search = (LinearLayout) view.findViewById(R.id.ll_search);
-        ll_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getContext(), SearchActivity.class));
-            }
-        });
+//        ll_search = view.findViewById(R.id.ll_search);
+//        ll_search.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(getContext(), SearchActivity.class));
+//            }
+//        });
     }
 
     private class MyAdapter extends FragmentPagerAdapter {
