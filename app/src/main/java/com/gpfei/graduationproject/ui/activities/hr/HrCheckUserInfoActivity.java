@@ -15,13 +15,15 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.EditUserInfoActivity;
+import com.gpfei.graduationproject.ui.activities.common.FileWebDetailsActivity;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
 import com.gpfei.graduationproject.ui.activities.common.MyDataActivity;
+import com.gpfei.graduationproject.ui.activities.common.MyFileActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
 import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
@@ -30,7 +32,9 @@ import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.DownloadFileListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
@@ -38,8 +42,10 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
     private ImageView iv_back;
     private TextView tv_title;
     private TextView tv_name,tv_phone,tv_sex,tv_birth,tv_qq,tv_email,tv_induce,tv_experience;
-    private FloatingActionButton fab;
+    private FloatingActionButton fab,check_file,down_file;
     String username;
+    String fileUrl;
+    BmobFile downloadFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,8 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
 
     private void initView() {
         fab = findViewById(R.id.fab);
+        check_file = findViewById(R.id.check_file);
+        down_file = findViewById(R.id.down_file);
         iv_back = findViewById(R.id.iv_back);
         tv_title = findViewById(R.id.tv_title);
         tv_title.setText("求职者信息");
@@ -70,6 +78,7 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
             }
         });
 
+        //聊天
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +87,49 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
                 chat.putExtra(EaseConstant.EXTRA_USER_ID,username);  //对方账号
                 chat.putExtra(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE); //单聊模式
                 startActivity(chat);
+            }
+        });
+        //在线简历
+        check_file.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HrCheckUserInfoActivity.this, FileWebDetailsActivity.class).putExtra("fileUrl",fileUrl));
+            }
+        });
+        //下载简历
+        down_file.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        downloadFile.download(new DownloadFileListener() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                if(e==null){
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            System.out.println("路径"+s);
+                                            Toast.makeText(HrCheckUserInfoActivity.this, "下载成功,保存路径:"+s, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }else{
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(HrCheckUserInfoActivity.this, "下载失败："+e.getErrorCode()+","+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                            @Override
+                            public void onProgress(Integer integer, long l) {
+
+                            }
+                        });
+                    }
+                }).start();
             }
         });
     }
@@ -125,9 +177,12 @@ public class HrCheckUserInfoActivity extends AppCompatActivity {
                     tv_birth.setText(myUser.getBirthday());
 
                     username = myUser.getUsername();
+                    fileUrl = myUser.getFile().getFileUrl();
+                    downloadFile = myUser.getFile();
                     Log.d("cehngg",myUser.getUsername());
                 } else {
-                    Toast.makeText(HrCheckUserInfoActivity.this, "错误"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    ToastUtils.showTextToast(HrCheckUserInfoActivity.this,"对方还没有上传简历哟~");
+                    //Toast.makeText(HrCheckUserInfoActivity.this, "错误"+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });

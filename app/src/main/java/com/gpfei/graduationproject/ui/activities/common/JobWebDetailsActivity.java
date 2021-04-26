@@ -162,7 +162,7 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
         // titleUrl QQ和QQ空间跳转链接
         oks.setTitleUrl(url);
         // text是分享文本，所有平台都需要这个字段
-        oks.setText(title);
+        oks.setText(title+"招聘！");
         // setImageUrl是网络图片的url
         //oks.setImageUrl("https://hmls.hfbank.com.cn/hfapp-api/9.png");
         // url在微信、Facebook等平台中使用

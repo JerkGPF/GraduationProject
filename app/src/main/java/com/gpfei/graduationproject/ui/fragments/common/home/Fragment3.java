@@ -113,8 +113,8 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     switch (position){
                                         case 0:
-                                            String url = datalist.get(position).getUrl_selection();
-                                            String title = datalist.get(position).getTitle_selection();
+                                            String url = datalist.get(pos).getUrl_selection();
+                                            String title = datalist.get(pos).getTitle_selection();
                                             share(url,title);
                                             break;
                                         case 1:
@@ -148,7 +148,7 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
         // titleUrl QQ和QQ空间跳转链接
         oks.setTitleUrl(url);
         // text是分享文本，所有平台都需要这个字段
-        oks.setText(title);
+        oks.setText(title+"招聘！");
         // setImageUrl是网络图片的url
         //oks.setImageUrl("https://hmls.hfbank.com.cn/hfapp-api/9.png");
         // url在微信、Facebook等平台中使用

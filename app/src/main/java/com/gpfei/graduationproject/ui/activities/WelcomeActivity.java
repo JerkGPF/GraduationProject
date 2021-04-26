@@ -36,7 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private final long SPLASH_LENGTH = 2000;
     Timer timer = new Timer();
-    private Boolean isHR = false;
+    private Boolean isHR = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

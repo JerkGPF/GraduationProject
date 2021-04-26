@@ -46,9 +46,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -348,6 +350,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
+            Log.d(TAG, "requestCode: requestCode");
             switch (requestCode) {
                 case REQUEST_INFO:
                     if (resultCode == 200) {
@@ -375,16 +378,20 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                         // iv_user_head.setImageBitmap(mBitmap);
                         // storeImage(mBitmap);
                     } else {
+                        Log.d(TAG, "RESULT_CROP: 准备");
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 String picPath = getOutputMediaFile().toString();
+                                Log.d(TAG, "run: 准备"+picPath);
                                 BmobFile bmobFile = new BmobFile(new File(picPath));
                                 bmobFile.uploadblock(new UploadFileListener() {
                                     @Override
                                     public void done(BmobException e) {
                                         if (e == null) {
+                                            Log.d(TAG, "done: 准备");
                                             saveFile(bmobFile);
+                                            Log.d(TAG, "done: 执行");
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -427,22 +434,29 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void saveFile(BmobFile bmobFile) {
+        //查找Person表里面id为6b6c11c537的数据
         MyUser myUser = BmobUser.getCurrentUser(MyUser.class);
-        //更新Person表里面id为6b6c11c537的数据，address内容更新为“北京朝阳”
-        myUser.setHeadFile(bmobFile);
-        myUser.setHead(bmobFile.getFileUrl());
-        myUser.update(myUser.getObjectId(), new UpdateListener() {
-            @Override
-            public void done(BmobException e) {
-                if (e == null) {
-                    Log.d("上传文件成功:", bmobFile.getFileUrl());
-                    Log.d("上传文件成功:", bmobFile.getFilename());
-                } else {
-                    Log.d("上传文件失败：", e.getMessage());
+        if (myUser!=null){
+            //更新Person表里面id为6b6c11c537的数据，address内容更新为“北京朝阳”
+            myUser.setHeadFile(bmobFile);
+            myUser.setHead(bmobFile.getFileUrl());
+            myUser.update(myUser.getObjectId(), new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null) {
+                        System.out.println("图片地址:"+bmobFile.getFileUrl());
+                        System.out.println("图片名称："+bmobFile.getFilename());
+                        Log.d("上传文件成功:", bmobFile.getFileUrl());
+                        Log.d("上传文件成功:", bmobFile.getFilename());
+                    } else {
+                        Log.d("上传文件失败：", e.getMessage());
+                    }
                 }
-            }
+            });
+        }else {
 
-        });
+        }
+
     }
 
 }

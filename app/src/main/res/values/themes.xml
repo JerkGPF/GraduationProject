@@ -14,7 +14,12 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="bottom_bar_style">
+    <style name="floatingActionsMenu_fab_style">
+        <item name="android:background"> @drawable/fab_label_background</item>  //文字背景的样式
+        <item name="android:textColor"> @color/text_color</item>  //文字的颜色
+    </style>
+
+<style name="bottom_bar_style">
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>

@@ -46,6 +46,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_add"
-        app:backgroundTint="#FF3881"
+        app:backgroundTint="@color/colorPrimary"
         android:layout_margin="16dp" />
 </RelativeLayout>

@@ -158,4 +158,5 @@
     <color name="gray_8f">#8f8f8f</color><!--灰色8f -->
 
     <color name="toumingbai">#54ffffff</color><!--透明白 -->
-</resources>
+    <color name="text_color"> #8f8f8f</color>
+    </resources>
