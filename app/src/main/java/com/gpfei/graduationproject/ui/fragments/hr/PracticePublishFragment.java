@@ -24,6 +24,7 @@ import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.SelectionBean;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
+import com.gpfei.graduationproject.ui.activities.hr.JobDetailsActivity;
 import com.gpfei.graduationproject.ui.activities.hr.ModifyActivity;
 import com.gpfei.graduationproject.ui.activities.hr.ModifyPracticeActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
@@ -128,7 +129,7 @@ public class PracticePublishFragment extends Fragment {
                             @Override
                             public void onItemClick(View view, int position) {
                                 //点击事件
-                                Intent intent = new Intent(getContext(), JobWebDetailsActivity.class);
+                                Intent intent = new Intent(getContext(), JobDetailsActivity.class);
                                 intent.putExtra("url", datalist.get(position).getUrl_selection());
                                 startActivity(intent);
                             }
