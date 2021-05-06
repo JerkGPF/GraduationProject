@@ -135,7 +135,7 @@ public class Fragment3 extends Fragment implements View.OnClickListener {
                     rl_load_view3.setVisibility(View.GONE);
                     rl_network_error3.setVisibility(View.VISIBLE);
                     btn_load3.setText("重新加载");
-                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
+//                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
                 }
             }
         });

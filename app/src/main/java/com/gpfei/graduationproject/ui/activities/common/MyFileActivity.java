@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import com.jwenfeng.library.pulltorefresh.BaseRefreshListener;
 import com.jwenfeng.library.pulltorefresh.PullToRefreshLayout;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
@@ -147,6 +150,8 @@ public class MyFileActivity extends AppCompatActivity implements View.OnClickLis
                 Log.d("地址：",path);
                 filePath = path;
             }
+            BmobUser bmobUser = BmobUser.getCurrentUser(User.class);
+            if (bmobUser!=null){
                 BmobFile bmobFile = new BmobFile(new File(filePath));
                 bmobFile.uploadblock(new UploadFileListener() {
                     @Override
@@ -177,7 +182,11 @@ public class MyFileActivity extends AppCompatActivity implements View.OnClickLis
                         // 返回的上传进度（百分比）
                     }
                 });
+            }else {
+                ToastUtils.showTextToast(MyFileActivity.this,"请重新登录");
+            }
         }
+
     }
 
     @Override
@@ -198,7 +207,31 @@ public class MyFileActivity extends AppCompatActivity implements View.OnClickLis
                 //download();
                 break;
             case R.id.tv_action:
-                download();
+                PopupMenu popupMenu=new PopupMenu(MyFileActivity.this,v);//1.实例化PopupMenu
+                getMenuInflater().inflate(R.menu.menu,popupMenu.getMenu());//2.加载Menu资源
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.popup_download:
+                                download();
+                                return true;
+                            case R.id.popup_delete:
+                                //删除操作
+                                delete();
+                                return true;
+                            case R.id.popup_preview:
+                                //预览简历信息
+                                startActivity(new Intent(MyFileActivity.this,FileWebDetailsActivity.class).putExtra("fileUrl",fileUrl));
+                                System.out.println("地址"+fileUrl);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popupMenu.show();//4.显示弹出菜单
+                //download();
                 //删除和重命名简历
                 break;
         }
@@ -222,6 +255,59 @@ public class MyFileActivity extends AppCompatActivity implements View.OnClickLis
         });
 
     }
+    //简历删除
+    private void delete(){
+        BmobFile bmobFile = new BmobFile();
+        bmobFile.setUrl(fileUrl);//此url是上传文件成功之后通过bmobFile.getUrl()方法获取的。
+        bmobFile.delete(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e==null){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyUser myUser  = BmobUser.getCurrentUser(MyUser.class);
+                            File tempFile = new File("http://files.fuengby.top/2021/04/30/416ecf7e40acf08d8095409652b57150.txt");
+                            try {
+                                tempFile.createNewFile();
+                            } catch (IOException ioException) {
+                                ioException.printStackTrace();
+                            }
+                            System.out.println(tempFile);
+                            BmobFile fie = new BmobFile(tempFile);
+                            myUser.setFile(fie);
+                            myUser.update(myUser.getObjectId(),new UpdateListener() {
+                                @Override
+                                public void done(BmobException e) {
+                                    if (e==null){
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                SmileToast smileToast = new SmileToast();
+                                                smileToast.smile("文件按删除成功！");
+                                                show();
+                                            }
+                                        });
+                                    }else {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                System.out.println("出错了"+e.getMessage());
+                                            }
+                                        });
+
+                                    }
+                                }
+                            });
+                        }
+                    }).start();
+                }else{
+                    Toast.makeText(MyFileActivity.this, "文件删除失败："+e.getErrorCode()+","+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
     private void saveFile(BmobFile bmobFile) {
         MyUser myUser  = BmobUser.getCurrentUser(MyUser.class);

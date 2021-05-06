@@ -30,6 +30,8 @@ import com.mob.MobSDK;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
@@ -63,7 +65,29 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
         btn_load1 = view.findViewById(R.id.btn_load1);
         btn_load1.setOnClickListener(this);
         rl_network_error1 = view.findViewById(R.id.rl_network_error1);
+
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                BmobQuery<DayBean> query = new BmobQuery<DayBean>();
+                query.findObjects(new FindListener<DayBean>() {
+                    @Override
+                    public void done(List<DayBean> list, BmobException e) {
+                        if(e == null){
+                            Log.d("run>>>>>>", list.get(0).getCompany_day());
+                            //Toast.makeText(getActivity(), list.get(0).getCompany_day(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                //loadList();
+            }
+        };
+        //每秒执行一次TimerTask
+        timer.schedule(timerTask,0,1000);
     }
+
+
 
     //加载列表数据
     private void loadList() {
@@ -135,7 +159,7 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                     rl_network_error1.setVisibility(View.VISIBLE);
                     btn_load1.setText("重新加载");
                     Log.e("出错了", e.getMessage());
-                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
+//                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
                 }
             }
         });

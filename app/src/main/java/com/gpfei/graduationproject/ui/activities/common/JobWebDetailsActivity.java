@@ -13,26 +13,33 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.DayBean;
+import com.gpfei.graduationproject.beans.HrUser;
 import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.beans.SelectAndResume;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.ui.activities.MessageActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
+import com.gpfei.graduationproject.ui.activities.hr.HrDataActivity;
 import com.gpfei.graduationproject.utils.ToastUtils;
 import com.hyphenate.easeui.EaseConstant;
 import com.longsh.optionframelibrary.OptionCenterDialog;
 import com.mob.MobSDK;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.http.I;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
@@ -48,6 +55,7 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
     private String objectId;
     String title;
     String url;
+    private TextView tv_check;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +67,6 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initView() {
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -83,6 +90,7 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
         iv_back = findViewById(R.id.iv_back);
         tv_title = findViewById(R.id.tv_title);
         ll_collect = findViewById(R.id.ll_collect);
+        tv_check = findViewById(R.id.tv_check);
 
         ll_error_state = findViewById(R.id.ll_error_state);
         mWebView = findViewById(R.id.mWebView);
@@ -102,6 +110,29 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
             public void onClick(View v) {
                 share();
             }
+        });
+        tv_check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    BmobQuery<DayBean> bmobQuery = new BmobQuery<DayBean>();
+                    bmobQuery.getObject(objectId, new QueryListener<DayBean>() {
+                        @Override
+                        public void done(DayBean dayBean, BmobException e) {
+                            if (e==null){
+                                String authorId = dayBean.getAuthor().getObjectId();
+                                new Thread(){
+                                    @Override
+                                    public void run() {
+                                        equal(authorId);
+                                    }
+                                }.start();
+                            }else {
+
+                            }
+                        }
+                    });
+
+                }
         });
         ll_collect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,5 +270,31 @@ public class JobWebDetailsActivity extends AppCompatActivity implements View.OnC
                 loadWeb();
                 break;
         }
+    }
+
+    /**
+     * name为football的类别
+     * @param authorId
+     */
+    private void equal(String authorId) {
+        BmobQuery<HrUser> categoryBmobQuery = new BmobQuery<>();
+        categoryBmobQuery.addWhereEqualTo("userInfo", authorId);
+        categoryBmobQuery.findObjects(new FindListener<HrUser>() {
+            @Override
+            public void done(List<HrUser> object, BmobException e) {
+                if (e == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String companyId = object.get(0).getObjectId();
+                            startActivity(new Intent(JobWebDetailsActivity.this, CheckHrActivity.class).putExtra("companyId",companyId));
+                        }
+                    });
+
+                } else {
+                    Log.e("BMOB", e.toString());
+                }
+            }
+        });
     }
 }

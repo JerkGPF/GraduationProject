@@ -97,8 +97,8 @@ public class WelcomeActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        //startActivity(new Intent(WelcomeActivity.this,MainActivity.class));
-                                        Toast.makeText(WelcomeActivity.this, "Bmob未登录", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(WelcomeActivity.this,LoginAndRegisterActivity.class));
+                                        //Toast.makeText(WelcomeActivity.this, "Bmob未登录", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }

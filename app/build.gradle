@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.gpfei.graduationproject"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -81,6 +81,9 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.teprinciple:updateapputilsx:2.3.0'
+
 
 
 

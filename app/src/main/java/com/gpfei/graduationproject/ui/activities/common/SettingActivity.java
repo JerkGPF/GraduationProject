@@ -21,10 +21,18 @@ import com.hyphenate.chat.EMClient;
 import com.longsh.optionframelibrary.OptionBottomDialog;
 import com.longsh.optionframelibrary.OptionMaterialDialog;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobUser;
+import constant.UiType;
+import listener.Md5CheckResultListener;
+import listener.UpdateDownloadListener;
+import model.UiConfig;
+import model.UpdateConfig;
+import update.UpdateAppUtils;
 
 public class SettingActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView iv_back;
@@ -36,6 +44,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private View view_line_setting;
     private TextView cace_tv;
 
+
+    private String apkUrl = "http://files.fuengby.top/2021/05/05/72f2b736409e0360801ebba0ff981c26.apk";
+    private String updateTitle = "发现新版本V2.0.0";
+    private String updateContent = "1、随便测试\n2、支持自定义UI\n3、增加md5校验\n4、更多功能等你探索";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +137,52 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                         .show();
                 break;
             case R.id.rl_setting_menu3:
-                ToastUtils.showImageToast(SettingActivity.this, "已经是最新版");
-                break;
+                UpdateConfig updateConfig = new UpdateConfig();
+                updateConfig.setCheckWifi(true);
+                updateConfig.setNeedCheckMd5(true);
+                updateConfig.setNotifyImgRes(R.mipmap.ic_launcher_round);
+                updateConfig.setServerVersionCode(2);
+
+                UiConfig uiConfig = new UiConfig();
+                uiConfig.setUiType(UiType.PLENTIFUL);
+                uiConfig.setUpdateBtnBgColor(R.color.colorPrimary);
+
+
+                UpdateAppUtils
+                        .getInstance()
+                        .apkUrl(apkUrl)
+                        .updateTitle(updateTitle)
+                        .updateContent(updateContent)
+                        .uiConfig(uiConfig)
+                        .updateConfig(updateConfig)
+                        .setMd5CheckResultListener(new Md5CheckResultListener() {
+                            @Override
+                            public void onResult(boolean b) {
+
+                            }
+                        })
+                        .setUpdateDownloadListener(new UpdateDownloadListener() {
+                            @Override
+                            public void onStart() {
+
+                            }
+
+                            @Override
+                            public void onDownload(int i) {
+
+                            }
+
+                            @Override
+                            public void onFinish() {
+
+                            }
+
+                            @Override
+                            public void onError(@NotNull Throwable throwable) {
+
+                            }
+                        })
+                        .update();                break;
             case R.id.iv_back:
                 finish();
                 break;

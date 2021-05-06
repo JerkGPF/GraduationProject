@@ -140,7 +140,7 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                     rl_load_view2.setVisibility(View.GONE);
                     rl_network_error2.setVisibility(View.VISIBLE);
                     btn_load2.setText("重新加载");
-                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
+//                    ToastUtils.showTextToast(getContext(), "出故障啦~请检查网络");
                 }
             }
         });

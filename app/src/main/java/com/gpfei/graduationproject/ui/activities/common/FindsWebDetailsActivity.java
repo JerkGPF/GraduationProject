@@ -16,8 +16,11 @@ import android.widget.TextView;
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.utils.ToastUtils;
 import com.longsh.optionframelibrary.OptionCenterDialog;
+import com.mob.MobSDK;
 
 import java.util.ArrayList;
+
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class FindsWebDetailsActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView iv_back;
@@ -36,49 +39,40 @@ public class FindsWebDetailsActivity extends AppCompatActivity implements View.O
     }
 
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        tv_title = (TextView) findViewById(R.id.tv_title);
+        iv_back = findViewById(R.id.iv_back);
+        tv_title = findViewById(R.id.tv_title);
         tv_title.setText("返回");
-        ll_error_state = (LinearLayout) findViewById(R.id.ll_error_state);
-        btn_load = (Button) findViewById(R.id.btn_load);
+        ll_error_state = findViewById(R.id.ll_error_state);
+        btn_load = findViewById(R.id.btn_load);
         btn_load.setOnClickListener(this);
         iv_back.setOnClickListener(this);
-        mWebView = (WebView) findViewById(R.id.mWebView);
-        iv_sharing = (ImageView) findViewById(R.id.iv_sharing);
+        mWebView = findViewById(R.id.mWebView);
+        iv_sharing = findViewById(R.id.iv_sharing);
         iv_sharing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //长按弹出列表提示框
-                final ArrayList<String> list = new ArrayList<>();
-                list.add("分享到朋友圈");
-                list.add("分享到新浪微博");
-                list.add("分享到腾讯QQ");
-                final OptionCenterDialog optionCenterDialog = new OptionCenterDialog();
-                optionCenterDialog.show(FindsWebDetailsActivity.this, list);
-                optionCenterDialog.setItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        switch (position) {
-                            case 0:
-                                ToastUtils.showImageToast(FindsWebDetailsActivity.this, "分享成功");
-                                break;
-                            case 1:
-                                ToastUtils.showImageToast(FindsWebDetailsActivity.this, "分享成功");
-                                break;
-                            case 2:
-                                ToastUtils.showImageToast(FindsWebDetailsActivity.this, "分享成功");
-                                break;
-                            default:
-                                break;
-                        }
-                        optionCenterDialog.dismiss();
-                    }
-                });
+                share();//分享
             }
         });
 
     }
 
+    private void share() {
+        String url = (String) getIntent().getExtras().get("url");
+        OnekeyShare oks = new OnekeyShare();
+        // title标题，微信、QQ和QQ空间等平台使用
+        //oks.setTitle(getString(R.string.share));
+        // titleUrl QQ和QQ空间跳转链接
+        oks.setTitleUrl(url);
+        // text是分享文本，所有平台都需要这个字段
+//        oks.setText(title+"招聘！");
+        // setImageUrl是网络图片的url
+        //oks.setImageUrl("https://hmls.hfbank.com.cn/hfapp-api/9.png");
+        // url在微信、Facebook等平台中使用
+        oks.setUrl(url);
+        // 启动分享GUI
+        oks.show(MobSDK.getContext());
+    }
 
     private void loadWeb() {
         String url = (String) getIntent().getExtras().get("url");

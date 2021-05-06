@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import model.UpdateConfig;
 
 
 public class VersionUtils {
@@ -14,7 +15,7 @@ public class VersionUtils {
 
     //版本号
     public static int getVersionCode(Context context) {
-        return getPackageInfo(context).versionCode;
+        return new UpdateConfig().getServerVersionCode()+1;
     }
 
     private static PackageInfo getPackageInfo(Context context) {

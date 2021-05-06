@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -15,12 +16,15 @@ import android.widget.TextView;
 
 import com.gpfei.graduationproject.R;
 import com.gpfei.graduationproject.beans.MyUser;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.utils.ToastUtils;
 
 import java.util.Calendar;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 public class UpdateUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -65,7 +69,37 @@ public class UpdateUserInfoActivity extends AppCompatActivity implements View.On
 
         btn_submit.setOnClickListener(this);
 
+        showInfo();
 
+
+    }
+
+    private void showInfo() {
+        MyUser user = BmobUser.getCurrentUser(MyUser.class);
+        //查找Person表里面id为6b6c11c537的数据
+        BmobQuery<MyUser> bmobQuery = new BmobQuery<MyUser>();
+        bmobQuery.getObject(user.getObjectId(), new QueryListener<MyUser>() {
+            @Override
+            public void done(MyUser object,BmobException e) {
+                if(e==null){
+                    et_name.setText(user.getName());
+                    tv_show_birthday.setText(user.getBirthday());
+                    et_edit_phone.setText(user.getMobilePhoneNumber());
+                    et_edit_qq.setText(user.getQq());
+                    et_edit_email.setText(user.getEmail());
+                    et_exper.setText(user.getExperience());
+                    et_introduce.setText(user.getProfile());
+                    Log.d("run>>>>>>", user.getName());
+                    if (user.getSex()){
+                        rb_sex_male.setChecked(true);
+                    }else if (!user.getSex()){
+                        rb_sex_female.setChecked(true);
+                    }
+                }else{
+
+                }
+            }
+        });
     }
 
     @Override

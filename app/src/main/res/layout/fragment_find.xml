@@ -19,7 +19,7 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:layout_gravity="center"
-            android:text="职场发现"/>
+            android:text="知识发现"/>
 
     </androidx.appcompat.widget.Toolbar>
     <ScrollView

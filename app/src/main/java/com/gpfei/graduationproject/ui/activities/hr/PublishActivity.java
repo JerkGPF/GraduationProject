@@ -19,6 +19,7 @@ import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.HrUser;
 import com.gpfei.graduationproject.beans.MyUser;
 import com.gpfei.graduationproject.beans.SelectionBean;
+import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.beans.WeekendBean;
 import com.gpfei.graduationproject.ui.activities.common.EditUserInfoActivity;
 import com.gpfei.graduationproject.ui.activities.common.login.LoginAndRegisterActivity;
@@ -27,10 +28,13 @@ import com.gpfei.graduationproject.utils.SmileToast;
 import com.gpfei.graduationproject.utils.ToastUtils;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.http.I;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 
@@ -52,6 +56,12 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_publish);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                equal();
+            }
+        }).start();
         initView();
     }
 
@@ -68,7 +78,7 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
         iv_back = findViewById(R.id.iv_back);
         iv_back.setOnClickListener(this);
         btn = findViewById(R.id.submit);
-        tv_title = (TextView) findViewById(R.id.tv_title);
+        tv_title = findViewById(R.id.tv_title);
         tv_title.setText("职位发布");
         btn.setOnClickListener(this);
         cancel.setOnClickListener(this);
@@ -244,5 +254,31 @@ public class PublishActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             Toast.makeText(PublishActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * name为football的类别
+     */
+    private void equal() {
+        BmobQuery<HrUser> bmobQuery = new BmobQuery<>();
+        bmobQuery.addWhereEqualTo("userInfo", BmobUser.getCurrentUser(User.class));
+        bmobQuery.findObjects(new FindListener<HrUser>() {
+            @Override
+            public void done(List<HrUser> object, BmobException e) {
+                if (e == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String companyName = object.get(0).getCompany_name();
+                            et_hr_company_name.setText(companyName);
+
+                            Log.d("run:>>>>>>>>", companyName);
+                        }
+                    });
+                } else {
+                    Log.e("BMOB", e.toString());
+                }
+            }
+        });
     }
 }

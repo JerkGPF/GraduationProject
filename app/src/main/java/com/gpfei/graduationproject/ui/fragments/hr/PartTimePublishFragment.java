@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gpfei.graduationproject.R;
@@ -24,6 +25,7 @@ import com.gpfei.graduationproject.beans.DayBean;
 import com.gpfei.graduationproject.beans.User;
 import com.gpfei.graduationproject.beans.WeekendBean;
 import com.gpfei.graduationproject.ui.activities.common.JobWebDetailsActivity;
+import com.gpfei.graduationproject.ui.activities.hr.JobDetailsActivity;
 import com.gpfei.graduationproject.ui.activities.hr.ModifyActivity;
 import com.gpfei.graduationproject.ui.activities.hr.ModifyPartActivity;
 import com.gpfei.graduationproject.utils.DividerItemDecoration;
@@ -52,6 +54,7 @@ public class PartTimePublishFragment extends Fragment {
     private LinearLayout ll_myapply;
     private PullToRefreshLayout refresh_job;
     private List<WeekendBean> datalist = new ArrayList<>();
+    private TextView tv_publish;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,7 +69,8 @@ public class PartTimePublishFragment extends Fragment {
         rRecyclerview = view.findViewById(R.id.rRecyclerview);
         ll_myapply = view.findViewById(R.id.ll_myapply);
         refresh_job = view.findViewById(R.id.refresh_job);
-
+        tv_publish = view.findViewById(R.id.tv_publish);
+        tv_publish.setText("您还没有发布过岗位哟~");
         refresh_job.setRefreshListener(new BaseRefreshListener() {
             @Override
             public void refresh() {
@@ -125,7 +129,7 @@ public class PartTimePublishFragment extends Fragment {
                             @Override
                             public void onItemClick(View view, int position) {
                                 //点击事件
-                                Intent intent = new Intent(getContext(), JobWebDetailsActivity.class);
+                                Intent intent = new Intent(getContext(), JobDetailsActivity.class);
                                 intent.putExtra("url", datalist.get(position).getUrl());
                                 startActivity(intent);
                             }
