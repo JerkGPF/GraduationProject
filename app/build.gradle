@@ -85,6 +85,12 @@ dependencies {
     implementation 'com.teprinciple:updateapputilsx:2.3.0'
 
 
+    //更新xupdate
+    implementation 'com.zhy:okhttputils:2.6.2'
+
+    implementation 'com.github.xuexiangjys:XUpdate:2.0.7'
+
+
 
 
 

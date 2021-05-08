@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.xuexiang.xupdate.entity.UpdateEntity;
+
 import model.UpdateConfig;
 
 
@@ -15,7 +17,7 @@ public class VersionUtils {
 
     //版本号
     public static int getVersionCode(Context context) {
-        return new UpdateConfig().getServerVersionCode()+1;
+        return new UpdateEntity().getVersionCode();
     }
 
     private static PackageInfo getPackageInfo(Context context) {

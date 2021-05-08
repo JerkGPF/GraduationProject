@@ -20,6 +20,7 @@ import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.longsh.optionframelibrary.OptionBottomDialog;
 import com.longsh.optionframelibrary.OptionMaterialDialog;
+import com.xuexiang.xupdate.XUpdate;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private TextView cace_tv;
 
 
-    private String apkUrl = "http://files.fuengby.top/2021/05/05/72f2b736409e0360801ebba0ff981c26.apk";
+    private String apkUrl = "http://111.231.70.23:1111/update/apk/app-debug.apk";
     private String updateTitle = "发现新版本V2.0.0";
     private String updateContent = "1、随便测试\n2、支持自定义UI\n3、增加md5校验\n4、更多功能等你探索";
 
@@ -137,52 +138,11 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                         .show();
                 break;
             case R.id.rl_setting_menu3:
-                UpdateConfig updateConfig = new UpdateConfig();
-                updateConfig.setCheckWifi(true);
-                updateConfig.setNeedCheckMd5(true);
-                updateConfig.setNotifyImgRes(R.mipmap.ic_launcher_round);
-                updateConfig.setServerVersionCode(2);
-
-                UiConfig uiConfig = new UiConfig();
-                uiConfig.setUiType(UiType.PLENTIFUL);
-                uiConfig.setUpdateBtnBgColor(R.color.colorPrimary);
-
-
-                UpdateAppUtils
-                        .getInstance()
-                        .apkUrl(apkUrl)
-                        .updateTitle(updateTitle)
-                        .updateContent(updateContent)
-                        .uiConfig(uiConfig)
-                        .updateConfig(updateConfig)
-                        .setMd5CheckResultListener(new Md5CheckResultListener() {
-                            @Override
-                            public void onResult(boolean b) {
-
-                            }
-                        })
-                        .setUpdateDownloadListener(new UpdateDownloadListener() {
-                            @Override
-                            public void onStart() {
-
-                            }
-
-                            @Override
-                            public void onDownload(int i) {
-
-                            }
-
-                            @Override
-                            public void onFinish() {
-
-                            }
-
-                            @Override
-                            public void onError(@NotNull Throwable throwable) {
-
-                            }
-                        })
-                        .update();                break;
+                XUpdate.newBuild(this)
+                        .updateUrl("http://111.231.70.23:1111/update/checkVersion")
+                        .supportBackgroundUpdate(true)//后台更新
+                        .update();
+                break;
             case R.id.iv_back:
                 finish();
                 break;

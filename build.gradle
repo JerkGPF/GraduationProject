@@ -8,6 +8,8 @@ buildscript {
         jcenter()
         mavenCentral()
 
+        maven { url "https://jitpack.io" }
+
         maven {url "http://mvn.mob.com/android"}
 
 
@@ -32,6 +34,7 @@ allprojects {
 
         mavenCentral()
 
+        maven { url "https://jitpack.io" }
         //Bmob的maven仓库地址--必填
         maven {url 'https://dl.bintray.com/chaozhouzhang/maven' }
     }
