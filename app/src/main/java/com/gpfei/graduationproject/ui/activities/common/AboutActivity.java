@@ -46,7 +46,7 @@ public class AboutActivity extends AppCompatActivity {
         tv_title.setText("关于我们");
         tv_version = findViewById(R.id.tv_version);
         //设置版本号
-        String versions = "version " + VersionUtils.getVersionCode(AboutActivity.this);
+        String versions = "version " + VersionUtils.getVersionName(AboutActivity.this);
         tv_version.setText(versions);
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +59,7 @@ public class AboutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 XUpdate.newBuild(AboutActivity.this)
-                        .updateUrl("http://111.231.70.23:1111/update/checkVersion")
+                        .updateUrl("http://192.168.27.2:1111/mock/update/checkVersion")
                         .promptButtonTextColor(Color.WHITE)
                         .promptWidthRatio(0.7F)
                         .supportBackgroundUpdate(true)

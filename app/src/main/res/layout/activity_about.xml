@@ -64,7 +64,6 @@
                     android:text="By gpfei development"
                     android:textColor="@color/gray"
                     android:textSize="11sp" />
-
                 <TextView
                     android:id="@+id/tv_version"
                     android:layout_width="wrap_content"

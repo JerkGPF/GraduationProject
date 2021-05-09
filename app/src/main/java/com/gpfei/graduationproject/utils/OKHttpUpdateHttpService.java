@@ -96,7 +96,7 @@ public class OKHttpUpdateHttpService implements IUpdateHttpService {
                                 newJson.put("ApkMd5", jsonObject1.getString("apkMd5"));
                                 newJson.put("VersionId", jsonObject1.getString("versionId"));
                                 newJson.put("UpdateStatus", jsonObject1.getInt("updateStatus"));
-                                newJson.put("DownloadUrl", "http://111.231.70.23:1111/update/apk/" + jsonObject1.getString("downloadUrl"));
+                                newJson.put("DownloadUrl", "http://192.168.27.2:1111/mock/update/apk/" + jsonObject1.getString("downloadUrl"));
                                 newJson.put("UploadTime", jsonObject1.getString("uploadTime"));
                                 newJson.put("ModifyContent", jsonObject1.getString("modifyContent"));
                                 newJson.put("ApkSize", jsonObject1.getString("apkSize"));

@@ -46,8 +46,6 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private TextView cace_tv;
 
 
-    private String apkUrl = "http://111.231.70.23:1111/update/apk/app-debug.apk";
-    private String updateTitle = "发现新版本V2.0.0";
     private String updateContent = "1、随便测试\n2、支持自定义UI\n3、增加md5校验\n4、更多功能等你探索";
 
     @Override
@@ -80,13 +78,8 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             view_line_setting.setVisibility(View.VISIBLE);
             btn_exit.setVisibility(View.VISIBLE);
         }
-
-
         caceMuch();//显示缓存大小
-
-
     }
-
     //计算缓存
     private void caceMuch() {
         try {
@@ -139,7 +132,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.rl_setting_menu3:
                 XUpdate.newBuild(this)
-                        .updateUrl("http://111.231.70.23:1111/update/checkVersion")
+                        .updateUrl("http://192.168.27.2:1111/mock/update/checkVersion")
                         .supportBackgroundUpdate(true)//后台更新
                         .update();
                 break;
@@ -189,9 +182,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     }
                 });
-
                 break;
         }
-
     }
 }

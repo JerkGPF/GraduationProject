@@ -17,7 +17,7 @@ public class VersionUtils {
 
     //版本号
     public static int getVersionCode(Context context) {
-        return new UpdateEntity().getVersionCode();
+        return getPackageInfo(context).versionCode;
     }
 
     private static PackageInfo getPackageInfo(Context context) {
